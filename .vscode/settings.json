@@ -1,0 +1,7 @@
+{
+    "C_Cpp.errorSquiggles": "Enabled",
+    "clangTidy.systemIncludePath": [
+        "/home/fabian/Documents/ESP32/esp-idf/components/",
+        "/home/fabian/Documents/ESP32/esp-idf/components"
+    ]
+}
