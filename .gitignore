@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+# ESP32
+ESP32/build/
