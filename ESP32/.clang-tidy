@@ -1,0 +1,4 @@
+---
+Checks: 'bugprone-*,llvm-namespace-comment,misc-definitions-in-headers,misc-redundant-expression,modernize-*,performance-*,readability-misleading-indentation,cppcoreguidlines-macro-usage,google-readability-casting,-modernize-use-auto'
+WarningsAsErrors: '*'
+HeaderFilterRegex: './**/.*'
