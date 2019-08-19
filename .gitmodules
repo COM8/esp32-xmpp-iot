@@ -1,0 +1,7 @@
+[submodule "ESP32/main/xmpp/dxmpp"]
+	path = ESP32/main/xmpp/dxmpp
+	url = https://github.com/stefandxm/dxmpp.git
+
+[submodule "ESP32/main/xmpp/dxmpp/pugixml/"]
+	path = ESP32/main/xmpp/dxmpp/pugixml
+	url = https://github.com/zeux/pugixml.git
