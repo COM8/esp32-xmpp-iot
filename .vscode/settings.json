@@ -1,7 +1,17 @@
 {
-    "C_Cpp.errorSquiggles": "Enabled",
     "clangTidy.systemIncludePath": [
         "/home/fabian/Documents/ESP32/esp-idf/components/",
         "/home/fabian/Documents/ESP32/esp-idf/components"
-    ]
+    ],
+    "cSpell.words": [
+        "GPIO",
+        "espiot"
+    ],
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "C_Cpp.clang_format_style": "file",
+    "C_Cpp.clang_format_sortIncludes": true,
+    "C_Cpp.errorSquiggles": "Enabled",
+    "editor.renderWhitespace": "all",
+    "editor.renderIndentGuides": true
 }
