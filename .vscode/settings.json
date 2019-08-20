@@ -11,7 +11,11 @@
     "editor.formatOnPaste": true,
     "C_Cpp.clang_format_style": "file",
     "C_Cpp.clang_format_sortIncludes": true,
-    "C_Cpp.errorSquiggles": "Enabled",
+    "C_Cpp.errorSquiggles": "EnabledIfIncludesResolve",
     "editor.renderWhitespace": "all",
-    "editor.renderIndentGuides": true
+    "editor.renderIndentGuides": true,
+    "files.associations": {
+        "*.txt": "plaintext",
+        "*.ipp": "cpp"
+    }
 }

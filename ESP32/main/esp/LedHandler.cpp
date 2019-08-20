@@ -1,28 +1,46 @@
 #include "LedHandler.hpp"
-#include "driver/gpio.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "sdkconfig.h"
 
 //---------------------------------------------------------------------------
 namespace espiot::esp {
 //---------------------------------------------------------------------------
-#define BLINK_GPIO_RED (gpio_num_t) 14
+void LedHandler::init() {
+    // Red:
+    gpio_pad_select_gpio(GPIO_LED_RED);
+    gpio_set_direction(GPIO_LED_RED, GPIO_MODE_OUTPUT);
 
-void LedHandler::blink() {
-    gpio_pad_select_gpio(BLINK_GPIO_RED);
-    /* Set the GPIO as a push/pull output */
-    gpio_set_direction(BLINK_GPIO_RED, GPIO_MODE_OUTPUT);
-    while (true) {
-        /* Blink off (output low) */
-        printf("Turning off the LED\n");
-        gpio_set_level(BLINK_GPIO_RED, 0);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-        /* Blink on (output high) */
-        printf("Turning on the LED\n");
-        gpio_set_level(BLINK_GPIO_RED, 1);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
+    // Blue:
+    gpio_pad_select_gpio(GPIO_LED_BLUE);
+    gpio_set_direction(GPIO_LED_BLUE, GPIO_MODE_OUTPUT);
+
+    // Green:
+    gpio_pad_select_gpio(GPIO_LED_GREEN);
+    gpio_set_direction(GPIO_LED_GREEN, GPIO_MODE_OUTPUT);
+
+    // Make sure all LEDs are off:
+    turnAllOff();
+}
+
+void LedHandler::turnAllOff() {
+    turnOff(GPIO_LED_RED);
+    turnOff(GPIO_LED_BLUE);
+    turnOff(GPIO_LED_GREEN);
+}
+
+void LedHandler::turnAllOn() {
+    turnOn(GPIO_LED_RED);
+    turnOn(GPIO_LED_BLUE);
+    turnOn(GPIO_LED_GREEN);
+}
+
+void LedHandler::blink(gpio_num_t gpioNum) {
+}
+
+void LedHandler::turnOn(gpio_num_t gpioNum) {
+    gpio_set_level(gpioNum, 0);
+}
+
+void LedHandler::turnOff(gpio_num_t gpioNum) {
+    gpio_set_level(gpioNum, 0);
 }
 //---------------------------------------------------------------------------
 } // namespace espiot::esp

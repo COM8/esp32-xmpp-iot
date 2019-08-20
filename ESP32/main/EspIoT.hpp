@@ -1,11 +1,11 @@
 #pragma once
 
 #include "esp/LedHandler.hpp"
-
+#include "esp/WifiTask.hpp"
+#include <smooth/core/Application.h>
 //---------------------------------------------------------------------------
 namespace espiot {
 //---------------------------------------------------------------------------
-
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -16,14 +16,17 @@ void app_main(void);
 }
 #endif
 //---------------------------------------------------------------------------
-class EspIoT {
+class EspIoT : public smooth::core::Application {
     private:
     esp::LedHandler ledHandler;
+    esp::WifiTask wifiTask;
 
     public:
-    void run();
-};
+    EspIoT();
 
+    void init() override;
+    void tick() override;
+};
 //---------------------------------------------------------------------------
 } // namespace espiot
 //---------------------------------------------------------------------------
