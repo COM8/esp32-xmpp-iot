@@ -9,9 +9,8 @@ endif ()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-include(undefined-sanitizer)
+# include(undefined-sanitizer)
 include(clang-tidy)
-add_custom_target(lint)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
