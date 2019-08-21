@@ -1,22 +1,24 @@
 #pragma once
 
 #include "driver/gpio.h"
+#include <smooth/core/io/Output.h>
 
 //---------------------------------------------------------------------------
 namespace espiot::esp {
 //---------------------------------------------------------------------------
-class LedHandler {
+class RgbLed {
     public:
-    const gpio_num_t GPIO_LED_RED = GPIO_NUM_14;
-    const gpio_num_t GPIO_LED_BLUE = GPIO_NUM_12;
-    const gpio_num_t GPIO_LED_GREEN = GPIO_NUM_27;
+    smooth::core::io::Output r;
+    smooth::core::io::Output g;
+    smooth::core::io::Output b;
 
-    void init();
-    void turnAllOff();
-    void turnAllOn();
-    void blink(gpio_num_t gpioNum);
-    void turnOn(gpio_num_t gpioNum);
-    void turnOff(gpio_num_t gpioNum);
+    RgbLed(gpio_num_t r, gpio_num_t g, gpio_num_t b);
+
+    void turnOnOnly(smooth::core::io::Output& led);
+    void turnOffOnly(smooth::core::io::Output& led);
+
+    void turnOn(smooth::core::io::Output& led);
+    void turnOff(smooth::core::io::Output& led);
 };
 
 //---------------------------------------------------------------------------

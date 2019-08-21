@@ -1,8 +1,9 @@
 #pragma once
 
-#include "esp/LedHandler.hpp"
+#include "esp/RgbLed.hpp"
 #include "esp/WifiTask.hpp"
 #include <smooth/core/Application.h>
+
 //---------------------------------------------------------------------------
 namespace espiot {
 //---------------------------------------------------------------------------
@@ -18,7 +19,7 @@ void app_main(void);
 //---------------------------------------------------------------------------
 class EspIoT : public smooth::core::Application {
     private:
-    esp::LedHandler ledHandler;
+    esp::RgbLed rgbLed;
     esp::WifiTask wifiTask;
 
     public:

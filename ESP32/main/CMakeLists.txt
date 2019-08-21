@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 
 set(SOURCES EspIoT.cpp
-            esp/LedHandler.cpp
+            esp/RgbLed.cpp
             esp/WifiTask.cpp)
 
 idf_component_register(SRCS ${SOURCES}
