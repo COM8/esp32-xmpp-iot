@@ -11,3 +11,6 @@ set(SOURCES EspIoT.cpp
 idf_component_register(SRCS ${SOURCES}
                        INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR} $ENV{IDF_PATH}/components
                        REQUIRES smooth_component)
+
+# Import dxmpp targets 
+add_subdirectory(xmpp/dxmpp)
