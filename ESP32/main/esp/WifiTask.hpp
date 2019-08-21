@@ -19,7 +19,6 @@ class WifiTask : public smooth::core::Task,
     WifiTask(smooth::core::network::Wifi& wifi, LedHandler& ledHandler);
 
     void init() override;
-    void tick() override;
 
     void event(const smooth::core::network::NetworkStatus& event) override;
 };

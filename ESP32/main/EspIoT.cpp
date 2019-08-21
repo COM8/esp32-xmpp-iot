@@ -10,7 +10,8 @@ void app_main(void) {
     espIoT.start();
 }
 
-EspIoT::EspIoT() : Application(smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(1)), wifiTask(get_wifi(), ledHandler) {}
+EspIoT::EspIoT() : Application(smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(1)),
+                   ledHandler(), wifiTask(get_wifi(), ledHandler) {}
 
 void EspIoT::init() {
     // Init the LED handler:
