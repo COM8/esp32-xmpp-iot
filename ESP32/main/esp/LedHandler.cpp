@@ -36,7 +36,7 @@ void LedHandler::blink(gpio_num_t gpioNum) {
 }
 
 void LedHandler::turnOn(gpio_num_t gpioNum) {
-    gpio_set_level(gpioNum, 0);
+    gpio_set_level(gpioNum, 1);
 }
 
 void LedHandler::turnOff(gpio_num_t gpioNum) {
