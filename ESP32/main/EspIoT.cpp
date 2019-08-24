@@ -23,7 +23,7 @@ void EspIoT::init() {
 }
 
 void EspIoT::tick() {
-    double tmp = bmp180.readtemp();
+    double tmp = bmp180.readTemp();
     printf("Temp: %lf\n", tmp);
 
     int32_t pressure = bmp180.readPressure();

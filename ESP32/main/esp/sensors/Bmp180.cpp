@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 namespace espiot::esp::sensors {
 //---------------------------------------------------------------------------
-short Bmp180::readRegister16(uint8_t reg) {
+short Bmp180::readRegister16(Register reg) {
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (BMP180_ADDRESS << 1) | I2C_MASTER_WRITE, 1 /* expect ack */);
@@ -27,7 +27,7 @@ short Bmp180::readRegister16(uint8_t reg) {
     return static_cast<short>((msb << 8) | lsb);
 }
 
-int Bmp180::readRegister24(uint8_t reg) {
+int Bmp180::readRegister24(Register reg) {
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (BMP180_ADDRESS << 1) | I2C_MASTER_WRITE, 1 /* expect ack */);
@@ -55,54 +55,46 @@ uint32_t Bmp180::readUncompensatedTemp() {
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (BMP180_ADDRESS << 1) | I2C_MASTER_WRITE, 1 /* expect ack */);
-    i2c_master_write_byte(cmd, BMP085_REGISTER_CONTROL, 1);
-    i2c_master_write_byte(cmd, BMP085_REGISTER_READTEMPCMD, 1);
+    i2c_master_write_byte(cmd, Register::CONTROL, 1);
+    i2c_master_write_byte(cmd, Register::READTEMPCMD, 1);
     i2c_master_stop(cmd);
     i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
     vTaskDelay(5 / portTICK_PERIOD_MS);
-    return static_cast<unsigned short>(readRegister16(BMP085_REGISTER_TEMPDATA));
+    return static_cast<unsigned short>(readRegister16(Register::TEMPDATA));
 }
 
-uint32_t Bmp180::readUncompensatedPressure(uint32_t mode) {
+uint32_t Bmp180::readUncompensatedPressure(Mode mode) {
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (BMP180_ADDRESS << 1) | I2C_MASTER_WRITE, 1 /* expect ack */);
-    i2c_master_write_byte(cmd, BMP085_REGISTER_CONTROL, 1);
-    i2c_master_write_byte(cmd, BMP085_REGISTER_READPRESSURECMD + (mode << 6), 1);
+    i2c_master_write_byte(cmd, Register::CONTROL, 1);
+    i2c_master_write_byte(cmd, Register::READPRESSURECMD + (mode << 6), 1);
     i2c_master_stop(cmd);
     i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
     switch (mode) {
-        case BMP085_MODE_ULTRALOWPOWER:
+        case Mode::ULTRALOWPOWER:
             vTaskDelay(5 / portTICK_PERIOD_MS);
             break;
-        case BMP085_MODE_STANDARD:
+        case Mode::STANDARD:
             vTaskDelay(8 / portTICK_PERIOD_MS);
             break;
-        case BMP085_MODE_HIGHRES:
+        case Mode::HIGHRES:
             vTaskDelay(14 / portTICK_PERIOD_MS);
             break;
-        case BMP085_MODE_ULTRAHIGHRES:
+        case Mode::ULTRAHIGHRES:
         default:
             vTaskDelay(26 / portTICK_PERIOD_MS);
             break;
     }
     long ret;
-    if (mode != BMP085_MODE_ULTRAHIGHRES) {
-        ret = readRegister24(BMP085_REGISTER_PRESSUREDATA);
+    if (mode != Mode::ULTRAHIGHRES) {
+        ret = readRegister24(Register::PRESSUREDATA);
     } else {
-        ret = readRegister24(BMP085_REGISTER_PRESSUREDATA);
+        ret = readRegister24(Register::PRESSUREDATA);
     }
     return ret >> (8 - mode);
-}
-
-double Bmp180::centigrade_to_fahrenheit(double centigrade) {
-    return centigrade * 9 / 5 + 32.0;
-}
-
-double Bmp180::pascals_to_inHg(double pressure) {
-    return pressure * 0.00029530;
 }
 
 Bmp180::Bmp180(gpio_num_t sda, gpio_num_t scl) {
@@ -117,11 +109,12 @@ Bmp180::Bmp180(gpio_num_t sda, gpio_num_t scl) {
     i2c_driver_install(I2C_NUM_0, I2C_MODE_MASTER, 0, 0, 0);
 }
 
-double Bmp180::readtemp() {
-    unsigned short AC5 = readRegister16(BMP085_REGISTER_CAL_AC5);
-    unsigned short AC6 = readRegister16(BMP085_REGISTER_CAL_AC6);
-    short MC = readRegister16(BMP085_REGISTER_CAL_MC);
-    short MD = readRegister16(BMP085_REGISTER_CAL_MD);
+// Reads the current temperature and returns it in Celsius.
+double Bmp180::readTemp() {
+    unsigned short AC5 = readRegister16(Register::CAL_AC5);
+    unsigned short AC6 = readRegister16(Register::CAL_AC6);
+    short MC = readRegister16(Register::CAL_MC);
+    short MD = readRegister16(Register::CAL_MD);
 
     int32_t UT = readUncompensatedTemp();
 
@@ -131,21 +124,22 @@ double Bmp180::readtemp() {
     return ((B5 + 8) >> 4) / 10.0;
 }
 
+// Reads the current pressur and returns it in Pascals.
 int32_t Bmp180::readPressure() {
-    short AC1 = readRegister16(BMP085_REGISTER_CAL_AC1);
-    short AC2 = readRegister16(BMP085_REGISTER_CAL_AC2);
-    short AC3 = readRegister16(BMP085_REGISTER_CAL_AC3);
-    unsigned short AC4 = readRegister16(BMP085_REGISTER_CAL_AC4);
-    unsigned short AC5 = readRegister16(BMP085_REGISTER_CAL_AC5);
-    unsigned short AC6 = readRegister16(BMP085_REGISTER_CAL_AC6);
-    short B1 = readRegister16(BMP085_REGISTER_CAL_B1);
-    short B2 = readRegister16(BMP085_REGISTER_CAL_B2);
-    short MC = readRegister16(BMP085_REGISTER_CAL_MC);
-    short MD = readRegister16(BMP085_REGISTER_CAL_MD);
+    short AC1 = readRegister16(Register::CAL_AC1);
+    short AC2 = readRegister16(Register::CAL_AC2);
+    short AC3 = readRegister16(Register::CAL_AC3);
+    unsigned short AC4 = readRegister16(Register::CAL_AC4);
+    unsigned short AC5 = readRegister16(Register::CAL_AC5);
+    unsigned short AC6 = readRegister16(Register::CAL_AC6);
+    short B1 = readRegister16(Register::CAL_B1);
+    short B2 = readRegister16(Register::CAL_B2);
+    short MC = readRegister16(Register::CAL_MC);
+    short MD = readRegister16(Register::CAL_MD);
 
-    int32_t bmpMode = BMP085_MODE_STANDARD;
+    Mode mode = Mode::STANDARD;
     int32_t UT = readUncompensatedTemp();
-    int32_t UP = readUncompensatedPressure(bmpMode);
+    int32_t UP = readUncompensatedPressure(mode);
 
     int32_t X1 = (UT - static_cast<int32_t>(AC6)) * static_cast<int32_t>(AC5) >> 15;
     int32_t X2 = (static_cast<int32_t>(MC) << 11) / (X1 + static_cast<int32_t>(MD));
@@ -155,12 +149,12 @@ int32_t Bmp180::readPressure() {
     X1 = (B2 * (B6 * B6) >> 12) >> 11;
     X2 = (AC2 * B6) >> 11;
     int32_t X3 = X1 + X2;
-    int32_t B3 = (((static_cast<int32_t>(AC1) * 4 + X3) << bmpMode) + 2) >> 2;
+    int32_t B3 = (((static_cast<int32_t>(AC1) * 4 + X3) << mode) + 2) >> 2;
     X1 = (AC3 * B6) >> 13;
     X2 = (B1 * ((B6 * B6) >> 12)) >> 16;
     X3 = ((X1 + X2) + 2) >> 2;
     uint32_t B4 = (static_cast<int32_t>(AC4) * static_cast<int32_t>(X3 + 32768)) >> 15;
-    uint32_t B7 = ((static_cast<int32_t>(UP) - B3) * (50000 >> bmpMode));
+    uint32_t B7 = ((static_cast<int32_t>(UP) - B3) * (50000 >> mode));
     int32_t P;
     if (B7 < 0x80000000) {
         P = (B7 << 1) / B4;
@@ -171,6 +165,13 @@ int32_t Bmp180::readPressure() {
     X1 = (X1 * 3038) >> 16;
     X2 = (-7357 * P) >> 16;
     return P + ((X1 + X2 + 3791) >> 4);
+}
+
+double Bmp180::celsiusToFahrenheit(double tempCelsius) {
+    return tempCelsius * 9 / 5 + 32.0;
+}
+double Bmp180::pascalsToInHg(int32_t pressurePascals) {
+    return pressurePascals * 0.00029530;
 }
 //---------------------------------------------------------------------------
 } // namespace espiot::esp::sensors
