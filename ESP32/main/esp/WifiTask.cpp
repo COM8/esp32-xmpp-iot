@@ -1,4 +1,5 @@
 #include "WifiTask.hpp"
+#include "WiFiCredentials.hpp"
 #include "driver/gpio.h"
 #include <smooth/core/network/event/ConnectionStatusEvent.h>
 #include <smooth/core/task_priorities.h>
@@ -18,7 +19,7 @@ void WifiTask::init() {
     rgbLed.turnOnOnly(rgbLed.b);
     wifi.set_host_name("Smooth-ESP");
     wifi.set_auto_connect(true);
-    wifi.set_ap_credentials("Terrorbird", "updet11eguewj");
+    wifi.set_ap_credentials(SSID, PASSWORD);
     wifi.connect_to_ap();
 }
 
