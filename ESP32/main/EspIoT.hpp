@@ -2,6 +2,7 @@
 
 #include "esp/RgbLed.hpp"
 #include "esp/WifiTask.hpp"
+#include "esp/sensors/Bmp180.hpp"
 #include <smooth/core/Application.h>
 
 //---------------------------------------------------------------------------
@@ -21,6 +22,7 @@ class EspIoT : public smooth::core::Application {
     private:
     esp::RgbLed rgbLed;
     esp::WifiTask wifiTask;
+    esp::sensors::Bmp180 bmp180;
 
     public:
     EspIoT();

@@ -16,6 +16,7 @@
     "editor.renderIndentGuides": true,
     "files.associations": {
         "*.txt": "plaintext",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "string": "cpp"
     }
 }

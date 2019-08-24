@@ -5,8 +5,8 @@
 //---------------------------------------------------------------------------
 namespace espiot::esp {
 //---------------------------------------------------------------------------
-const std::string SSID = "<YOUR-WIFI-SSID>";
-const std::string PASSWORD = "<YOUR-WIFI-PASSWORD>";
+const std::string SSID = "<[{-_-}] ZZZzz zz z...>";
+const std::string PASSWORD = "Zuy4Sjcy7Se94zpCNNQ3";
 //---------------------------------------------------------------------------
 } // namespace espiot::esp
 //---------------------------------------------------------------------------
