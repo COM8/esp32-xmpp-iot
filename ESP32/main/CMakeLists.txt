@@ -13,4 +13,4 @@ idf_component_register(SRCS ${SOURCES}
                        REQUIRES smooth_component)
 
 # Import dxmpp targets 
-add_subdirectory(xmpp/dxmpp)
+# add_subdirectory(xmpp/dxmpp)
