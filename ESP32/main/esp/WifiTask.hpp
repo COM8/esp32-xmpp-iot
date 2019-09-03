@@ -27,7 +27,6 @@ class WifiTask : public smooth::core::Task,
 
     void event(const smooth::core::network::NetworkStatus& event) override;
 };
-
 //---------------------------------------------------------------------------
 } // namespace espiot::esp
 //---------------------------------------------------------------------------
