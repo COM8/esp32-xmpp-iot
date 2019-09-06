@@ -8,12 +8,13 @@ set(SOURCES EspIoT.cpp
 
             esp/RgbLed.cpp
             esp/WifiTask.cpp
+            esp/BluetoothServer.cpp
             
             esp/sensors/Bmp180.cpp)
 
 idf_component_register(SRCS ${SOURCES}
                        INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR} $ENV{IDF_PATH}/components
-                       REQUIRES smooth_component)
+                       REQUIRES smooth_component bt)
 
 # Import dxmpp targets 
 # add_subdirectory(xmpp/dxmpp)
