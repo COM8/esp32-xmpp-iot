@@ -15,11 +15,13 @@ void app_main(void) {
 EspIoT::EspIoT() : Application(smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(1)),
                    rgbLed(GPIO_NUM_27, GPIO_NUM_26, GPIO_NUM_25),
                    wifiTask(get_wifi(), rgbLed),
-                   bmp180(GPIO_NUM_32, GPIO_NUM_33) {}
+                   bmp180(GPIO_NUM_32, GPIO_NUM_33),
+                   btServer(rgbLed) {}
 
 void EspIoT::init() {
     // Start the WIFI task:
-    wifiTask.start();
+    // wifiTask.start();
+    btServer.start();
 }
 
 void EspIoT::tick() {

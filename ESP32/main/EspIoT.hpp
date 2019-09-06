@@ -2,6 +2,7 @@
 
 #include "esp/RgbLed.hpp"
 #include "esp/WifiTask.hpp"
+#include "esp/bt/BluetoothServer.hpp"
 #include "esp/sensors/Bmp180.hpp"
 #include <smooth/core/Application.h>
 
@@ -23,6 +24,7 @@ class EspIoT : public smooth::core::Application {
     esp::RgbLed rgbLed;
     esp::WifiTask wifiTask;
     esp::sensors::Bmp180 bmp180;
+    esp::BluetoothServer btServer;
 
     public:
     EspIoT();
