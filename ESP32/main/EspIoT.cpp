@@ -21,6 +21,7 @@ EspIoT::EspIoT() : Application(smooth::core::APPLICATION_BASE_PRIO, std::chrono:
 void EspIoT::init() {
     // Start the WIFI task:
     // wifiTask.start();
+    btServer.init();
     btServer.start();
 }
 

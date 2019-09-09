@@ -34,3 +34,6 @@
 # ESP32
 ESP32/build/
 ESP32/main/esp/WiFiCredentials.hpp
+
+# C++ Utils:
+ESP32/components/cpp_utils/

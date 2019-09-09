@@ -9,10 +9,9 @@ set(SOURCES EspIoT.cpp
             esp/RgbLed.cpp
             esp/WifiTask.cpp
             esp/bt/BluetoothServer.cpp
-            esp/bt/BluetoothHelper.cpp
             
             esp/sensors/Bmp180.cpp)
 
 idf_component_register(SRCS ${SOURCES}
-                       INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR} $ENV{IDF_PATH}/components $ENV{IDF_PATH}/components/btstack
-                       REQUIRES smooth_component bt)
+                       INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR} $ENV{IDF_PATH}/components
+                       REQUIRES smooth_component bt cpp_utils)
