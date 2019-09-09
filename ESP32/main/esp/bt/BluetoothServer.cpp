@@ -16,7 +16,7 @@ void BluetoothServer::start() {
         return;
     }
     BluetoothHelper::initBLE();
-    BluetoothHelper::initGapGatt(0x55);
+    BluetoothHelper::initGapGatt(0x55, "ESP32");
     BluetoothHelper::printMac();
 }
 
