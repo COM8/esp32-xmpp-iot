@@ -19,10 +19,14 @@ EspIoT::EspIoT() : Application(smooth::core::APPLICATION_BASE_PRIO, std::chrono:
                    btServer(rgbLed) {}
 
 void EspIoT::init() {
+    rgbLed.turnOnOnly(rgbLed.r);
+
     // Start the WIFI task:
     // wifiTask.start();
     btServer.init();
     btServer.start();
+    rgbLed.turnOff(rgbLed.r);
+    rgbLed.turnOn(rgbLed.g);
 }
 
 void EspIoT::tick() {

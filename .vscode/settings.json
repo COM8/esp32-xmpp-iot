@@ -90,7 +90,8 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "valarray": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "system_api.c": "cpp"
     },
     "files.watcherExclude": {
         "**/.git/objects/**": true,
