@@ -30,6 +30,9 @@ class BluetoothServer {
     // Format: utf8s
     // Source: https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Characteristics/org.bluetooth.characteristic.serial_number_string.xml
     static const BLEUUID UUID_CHARACTERISTIC_SERIAL_NUMBER;
+    // Format: utf8s
+    // Source: https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Characteristics/org.bluetooth.characteristic.manufacturer_name_string.xml
+    static const BLEUUID UUID_CHARACTERISTIC_MANUFACTURER_NAME;
 
     //-------------------
     // Bluetooth service UUIDs:
@@ -48,6 +51,7 @@ class BluetoothServer {
     BLEService* service;
     BLE2902 descriptor;
     BLEAdvertising* advertising;
+    BLEAdvertisementData advertisingData;
 
     public:
     BluetoothServer(RgbLed& rgbLed);
