@@ -1,4 +1,5 @@
 #include "EspIoT.hpp"
+#include "esp_log.h"
 #include <cstdio>
 #include <smooth/core/task_priorities.h>
 
@@ -19,6 +20,9 @@ EspIoT::EspIoT() : Application(smooth::core::APPLICATION_BASE_PRIO, std::chrono:
                    btServer(rgbLed) {}
 
 void EspIoT::init() {
+    // Set log level to DEBUG:
+    esp_log_level_set("*", ESP_LOG_DEBUG);
+
     rgbLed.turnOnOnly(rgbLed.r);
 
     // Start the WIFI task:

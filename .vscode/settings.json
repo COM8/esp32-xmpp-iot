@@ -5,6 +5,7 @@
     ],
     "cSpell.words": [
         "GPIO",
+        "SSID",
         "espiot"
     ],
     "editor.formatOnSave": true,

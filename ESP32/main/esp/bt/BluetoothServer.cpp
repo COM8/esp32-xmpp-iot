@@ -7,18 +7,10 @@
 //---------------------------------------------------------------------------
 namespace espiot::esp {
 //---------------------------------------------------------------------------
-const BLEUUID BluetoothServer::UUID_CHARACTERISTIC_LANGUAGE("00002AA2-0000-1000-8000-00805F9B34FB");
-const BLEUUID BluetoothServer::UUID_CHARACTERISTIC_HARDWARE_REVISION("00002A27-0000-1000-8000-00805F9B34FB");
-const BLEUUID BluetoothServer::UUID_CHARACTERISTIC_SERIAL_NUMBER("00002A25-0000-1000-8000-00805F9B34FB");
-const BLEUUID BluetoothServer::UUID_CHARACTERISTIC_MANUFACTURER_NAME("00002A29-0000-1000-8000-00805F9B34FB");
-
-const BLEUUID BluetoothServer::UUID_SERVICE_DEVICE_INFORMATION("0000180A-0000-1000-8000-00805F9B34FB");
-
 BluetoothServer::BluetoothServer(RgbLed& rgbLed) : rgbLed(rgbLed),
                                                    running(false),
                                                    server(nullptr),
-                                                   service(nullptr),
-                                                   descriptor(),
+                                                   serviceHelper(getChipMacString()),
                                                    advertising(nullptr),
                                                    advertisingData() {}
 
@@ -30,42 +22,6 @@ void BluetoothServer::init() {
     BLEDevice::init("ESP32 meets XMPP");
     server = BLEDevice::createServer();
 
-    service = server->createService(UUID_SERVICE_DEVICE_INFORMATION);
-
-    // Language:
-    BLECharacteristic* characteristic = service->createCharacteristic(
-        UUID_CHARACTERISTIC_LANGUAGE,
-        BLECharacteristic::PROPERTY_BROADCAST |
-            BLECharacteristic::PROPERTY_READ);
-    characteristic->setValue("en");
-    descriptor.setNotifications(true);
-    characteristic->addDescriptor(&descriptor);
-
-    // Hardware Revision:
-    characteristic = service->createCharacteristic(
-        UUID_CHARACTERISTIC_HARDWARE_REVISION,
-        BLECharacteristic::PROPERTY_BROADCAST |
-            BLECharacteristic::PROPERTY_READ);
-    characteristic->setValue("1.0");
-    descriptor.setNotifications(true);
-    characteristic->addDescriptor(&descriptor);
-
-    // Serial Number:
-    characteristic = service->createCharacteristic(
-        UUID_CHARACTERISTIC_SERIAL_NUMBER,
-        BLECharacteristic::PROPERTY_BROADCAST |
-            BLECharacteristic::PROPERTY_READ);
-    characteristic->setValue(getChipMacString());
-    characteristic->addDescriptor(&descriptor);
-
-    // Manufacturer Name:
-    characteristic = service->createCharacteristic(
-        UUID_CHARACTERISTIC_MANUFACTURER_NAME,
-        BLECharacteristic::PROPERTY_BROADCAST |
-            BLECharacteristic::PROPERTY_READ);
-    characteristic->setValue("TUM Garching");
-    characteristic->addDescriptor(&descriptor);
-
     // Generic Computer appearance
     // https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Characteristics/org.bluetooth.characteristic.gap.appearance.xml
     advertisingData.setAppearance(128);
@@ -74,14 +30,15 @@ void BluetoothServer::init() {
 
     advertising = server->getAdvertising();
     advertising->setAdvertisementData(advertisingData);
+
+    serviceHelper.init(this, server);
 }
 
 void BluetoothServer::start() {
     if (running) {
         return;
     }
-    service->start();
-    advertising->addServiceUUID(service->getUUID());
+    serviceHelper.start(server);
     advertising->start();
     rgbLed.turnOn(rgbLed.b);
 }
@@ -90,8 +47,16 @@ void BluetoothServer::stop() {
     if (!running) {
     }
     advertising->stop();
-    service->stop();
+    serviceHelper.stop(server);
     rgbLed.turnOff(rgbLed.b);
+}
+
+void BluetoothServer::onRead(BLECharacteristic* characteristic) {}
+
+void BluetoothServer::onWrite(BLECharacteristic* characteristic) {
+    if (characteristic->getValue() == "ready") {
+        serviceHelper.unlock(server);
+    }
 }
 
 std::string BluetoothServer::getChipMacString() {

@@ -9,6 +9,8 @@ set(SOURCES EspIoT.cpp
             esp/RgbLed.cpp
             esp/WifiTask.cpp
             esp/bt/BluetoothServer.cpp
+            esp/bt/BLECharacteristicRWCallback.cpp
+            esp/bt/BLEServiceHelper.cpp
             
             esp/sensors/Bmp180.cpp)
 
