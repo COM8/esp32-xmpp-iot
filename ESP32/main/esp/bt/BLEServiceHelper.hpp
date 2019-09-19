@@ -51,6 +51,8 @@ class BLEServiceHelper {
     static const BLEUUID UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_READ;
     // Custom UUID
     static const BLEUUID UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_WRITE;
+    // Custom UUID
+    static const BLEUUID UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_UNLOCKED;
 
     //-------------------
     // Bluetooth service UUIDs:

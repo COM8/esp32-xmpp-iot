@@ -21,6 +21,7 @@ bool BluetoothServer::isRunning() {
 void BluetoothServer::init() {
     BLEDevice::init("ESP32 meets XMPP");
     server = BLEDevice::createServer();
+    server->setCallbacks(this);
 
     // Generic Computer appearance
     // https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Characteristics/org.bluetooth.characteristic.gap.appearance.xml
@@ -57,6 +58,16 @@ void BluetoothServer::onWrite(BLECharacteristic* characteristic) {
     if (characteristic->getValue() == "ready") {
         serviceHelper.unlock(server);
     }
+}
+
+void BluetoothServer::onConnect(BLEServer* pServer) {
+    // Make sure we lock all information as soon as somebody else connects:
+    serviceHelper.lock(server);
+}
+
+void BluetoothServer::onDisconnect(BLEServer* pServer) {
+    // Make sure we lock all information as soon as somebody disconnects:
+    serviceHelper.lock(server);
 }
 
 std::string BluetoothServer::getChipMacString() {

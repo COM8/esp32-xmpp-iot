@@ -13,7 +13,7 @@
 //---------------------------------------------------------------------------
 namespace espiot::esp {
 //---------------------------------------------------------------------------
-class BluetoothServer : public BLECharacteristicCallbacks {
+class BluetoothServer : public BLECharacteristicCallbacks, public BLEServerCallbacks {
     private:
     RgbLed& rgbLed;
     bool running;
@@ -35,6 +35,9 @@ class BluetoothServer : public BLECharacteristicCallbacks {
 
     void onRead(BLECharacteristic* characteristic) override;
     void onWrite(BLECharacteristic* characteristic) override;
+
+    void onConnect(BLEServer* pServer) override;
+    void onDisconnect(BLEServer* pServer) override;
 
     static std::string getChipMacString();
 };

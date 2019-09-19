@@ -15,6 +15,7 @@ const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_JID_PASSWORD("00000004-0000-
 const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_SETTINGS_DONE("00000005-0000-0000-0000-000000000002");
 const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_READ("00000006-0000-0000-0000-000000000002");
 const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_WRITE("00000007-0000-0000-0000-000000000002");
+const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_UNLOCKED("00000008-0000-0000-0000-000000000002");
 
 const BLEUUID BLEServiceHelper::UUID_SERVICE_DEVICE_INFORMATION("0000180A-0000-1000-8000-00805F9B34FB");
 const BLEUUID BLEServiceHelper::UUID_SERVICE_DEVICE_SETTINGS("00000001-0000-0000-0000-000000000001");
@@ -70,6 +71,11 @@ void BLEServiceHelper::unlock(BLEServer* server) {
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_MANUFACTURER_NAME);
     characteristic->setValue("TUM Garching");
+
+    // Challenge response:
+    service = server->getServiceByUUID(UUID_SERVICE_CHALLENGE_RESPONSE);
+    characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_UNLOCKED);
+    characteristic->setValue(1);
 }
 
 void BLEServiceHelper::lock(BLEServer* server) {
@@ -86,6 +92,31 @@ void BLEServiceHelper::lock(BLEServer* server) {
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_MANUFACTURER_NAME);
     characteristic->setValue("");
+
+    // Device settings:
+    service = server->getServiceByUUID(UUID_SERVICE_DEVICE_SETTINGS);
+    characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_WIFI_SSID);
+    characteristic->setValue("");
+
+    characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_WIFI_PASSWORD);
+    characteristic->setValue("");
+
+    characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_JID);
+    characteristic->setValue("");
+
+    characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_JID_PASSWORD);
+    characteristic->setValue("");
+
+    // Challenge response:
+    service = server->getServiceByUUID(UUID_SERVICE_CHALLENGE_RESPONSE);
+    characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_READ);
+    characteristic->setValue("");
+
+    characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_WRITE);
+    characteristic->setValue("");
+
+    characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_UNLOCKED);
+    characteristic->setValue(0);
 }
 
 void BLEServiceHelper::initDeviceInfoService(BLECharacteristicCallbacks* callback, BLEServer* server) {
@@ -94,22 +125,22 @@ void BLEServiceHelper::initDeviceInfoService(BLECharacteristicCallbacks* callbac
     // Language:
     BLECharacteristic* characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_LANGUAGE,
-        BLECharacteristic::PROPERTY_READ);
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
     // Hardware Revision:
     characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_HARDWARE_REVISION,
-        BLECharacteristic::PROPERTY_READ);
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
     // Serial Number:
     characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_SERIAL_NUMBER,
-        BLECharacteristic::PROPERTY_READ);
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
     // Manufacturer Name:
     characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_MANUFACTURER_NAME,
-        BLECharacteristic::PROPERTY_READ);
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 }
 
 void BLEServiceHelper::initDeviceSettingsService(BLECharacteristicCallbacks* callback, BLEServer* server) {
@@ -152,7 +183,7 @@ void BLEServiceHelper::initChallengeResponseService(BLECharacteristicCallbacks* 
     // Read:
     BLECharacteristic* characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_READ,
-        BLECharacteristic::PROPERTY_READ);
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
     characteristic->setCallbacks(callback);
 
     // Write:
@@ -160,6 +191,11 @@ void BLEServiceHelper::initChallengeResponseService(BLECharacteristicCallbacks* 
         UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_WRITE,
         BLECharacteristic::PROPERTY_WRITE);
     characteristic->setCallbacks(callback);
+
+    // Unlocked:
+    characteristic = service->createCharacteristic(
+        UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_UNLOCKED,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 }
 //---------------------------------------------------------------------------
 } // namespace espiot::esp
