@@ -44,7 +44,7 @@ void BluetoothServer::start() {
     }
     serviceHelper.start(server);
     advertising->start();
-    rgbLed.turnOn(rgbLed.b);
+    rgbLed.turnOnOnly(rgbLed.b);
 }
 
 void BluetoothServer::stop() {

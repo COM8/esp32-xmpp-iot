@@ -17,6 +17,7 @@ void app_main(void) {
 
 EspIoT::EspIoT() : Application(smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(1)),
                    rgbLed(GPIO_NUM_27, GPIO_NUM_26, GPIO_NUM_25),
+                   resetButton(GPIO_NUM_4),
                    storage(),
                    wifiTask(get_wifi(), rgbLed),
                    bmp180(GPIO_NUM_32, GPIO_NUM_33),
@@ -29,6 +30,12 @@ void EspIoT::init() {
     storage.init();
     rgbLed.turnOnOnly(rgbLed.r);
 
+    // Check if reset button is pressen:
+    if (resetButton.isPressed()) {
+        std::cout << "Reset button pressed. Discarding initialization.\n";
+        storage.writeBool(esp::Storage::INITIALIZED, false);
+    }
+
     if (storage.readBool(esp::Storage::INITIALIZED)) {
         // Start the WIFI task:
         wifiTask.start();
@@ -37,8 +44,6 @@ void EspIoT::init() {
         btServer.registerCallback(this);
         btServer.start();
     }
-    rgbLed.turnOff(rgbLed.r);
-    rgbLed.turnOn(rgbLed.g);
 }
 
 void EspIoT::tick() {
@@ -47,6 +52,14 @@ void EspIoT::tick() {
 
     int32_t pressure = bmp180.readPressure();
     printf("Pressure: %i\n", pressure);
+
+    // Check if reset button is pressen:
+    if (resetButton.isPressed()) {
+        std::cout << "Reset button pressed. Discarding initialization.\n";
+        storage.writeBool(esp::Storage::INITIALIZED, false);
+        // Restart
+        esp_restart();
+    }
 }
 
 void EspIoT::onConfigurationDone(std::string& wifiSsid, std::string& wifiPassword, std::string& jid, std::string& jidPassword) {

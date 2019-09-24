@@ -1,6 +1,7 @@
 #include "WifiTask.hpp"
 #include "WiFiCredentials.hpp"
 #include "driver/gpio.h"
+#include <iostream>
 #include <smooth/core/network/event/ConnectionStatusEvent.h>
 #include <smooth/core/task_priorities.h>
 
@@ -15,7 +16,10 @@ WifiTask::WifiTask(network::Wifi& wifi, RgbLed& rgbLed) : Task("WIFI Task", smoo
                                                           net_status(NetworkStatusQueue::create("", 2, *this, *this)) {}
 
 void WifiTask::init() {
-    printf("Scanning for wifi...\n");
+    std::cout << "Scanning for wifi...\n";
+    rgbLed.turnOnOnly(rgbLed.g);
+    rgbLed.turnOn(rgbLed.r);
+
     rgbLed.turnOnOnly(rgbLed.b);
     wifi.set_host_name("Smooth-ESP");
     wifi.set_auto_connect(true);
@@ -26,13 +30,14 @@ void WifiTask::init() {
 void WifiTask::event(const network::NetworkStatus& event) {
     switch (event.get_event()) {
         case network::NetworkEvent::GOT_IP:
+            std::cout << "WIFI: Got IP!\n";
             rgbLed.turnOnOnly(rgbLed.g);
-            printf("WIFI: Got IP!\n");
             break;
 
         case network::NetworkEvent::DISCONNECTED:
-            rgbLed.turnOnOnly(rgbLed.b);
-            printf("WIFI: Disconnected!\n");
+            std::cout << "WIFI: Disconnected!\n";
+            rgbLed.turnOnOnly(rgbLed.g);
+            rgbLed.turnOn(rgbLed.r);
             break;
 
         default:
