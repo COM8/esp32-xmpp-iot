@@ -2,7 +2,7 @@
 #include <iostream>
 
 //---------------------------------------------------------------------------
-namespace espiot::esp {
+namespace espiot::esp::bt {
 //---------------------------------------------------------------------------
 void BLECharacteristicRWCallback::onRead(BLECharacteristic* characteristic) {
     std::cout << "Characteristic READ: " << characteristic->getUUID().toString();
@@ -14,5 +14,5 @@ void BLECharacteristicRWCallback::onWrite(BLECharacteristic* characteristic) {
     std::cout << " " << characteristic->getValue() << "\n";
 }
 //---------------------------------------------------------------------------
-} // namespace espiot::esp
+} // namespace espiot::esp::bt
 //---------------------------------------------------------------------------

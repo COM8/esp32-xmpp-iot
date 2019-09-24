@@ -5,7 +5,7 @@
 #include <string>
 
 //---------------------------------------------------------------------------
-namespace espiot::esp {
+namespace espiot::esp::bt {
 //---------------------------------------------------------------------------
 BluetoothServer::BluetoothServer(RgbLed& rgbLed) : rgbLed(rgbLed),
                                                    running(false),
@@ -79,5 +79,5 @@ std::string BluetoothServer::getChipMacString() {
 }
 
 //---------------------------------------------------------------------------
-} // namespace espiot::esp
+} // namespace espiot::esp::bt
 //---------------------------------------------------------------------------

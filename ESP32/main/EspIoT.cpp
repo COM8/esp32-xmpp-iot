@@ -15,14 +15,16 @@ void app_main(void) {
 
 EspIoT::EspIoT() : Application(smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(1)),
                    rgbLed(GPIO_NUM_27, GPIO_NUM_26, GPIO_NUM_25),
+                   storage(),
                    wifiTask(get_wifi(), rgbLed),
                    bmp180(GPIO_NUM_32, GPIO_NUM_33),
-                   btServer(rgbLed) {}
+                   btServer(rgbLed){};
 
 void EspIoT::init() {
     // Set log level to DEBUG:
     esp_log_level_set("*", ESP_LOG_DEBUG);
 
+    storage.init();
     rgbLed.turnOnOnly(rgbLed.r);
 
     // Start the WIFI task:

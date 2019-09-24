@@ -11,7 +11,7 @@
 #include <string>
 
 //---------------------------------------------------------------------------
-namespace espiot::esp {
+namespace espiot::esp::bt {
 //---------------------------------------------------------------------------
 class BluetoothServer : public BLECharacteristicCallbacks, public BLEServerCallbacks {
     private:
@@ -42,5 +42,5 @@ class BluetoothServer : public BLECharacteristicCallbacks, public BLEServerCallb
     static std::string getChipMacString();
 };
 //---------------------------------------------------------------------------
-} // namespace espiot::esp
+} // namespace espiot::esp::bt
 //---------------------------------------------------------------------------

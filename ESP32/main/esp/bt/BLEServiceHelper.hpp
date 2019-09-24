@@ -6,7 +6,7 @@
 #include <string>
 
 //---------------------------------------------------------------------------
-namespace espiot::esp {
+namespace espiot::esp::bt {
 //---------------------------------------------------------------------------
 class BLEServiceHelper {
     private:
@@ -77,5 +77,5 @@ class BLEServiceHelper {
     void lock(BLEServer* server);
 };
 //---------------------------------------------------------------------------
-} // namespace espiot::esp
+} // namespace espiot::esp::bt
 //---------------------------------------------------------------------------

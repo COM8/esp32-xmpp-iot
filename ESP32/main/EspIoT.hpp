@@ -1,6 +1,7 @@
 #pragma once
 
 #include "esp/RgbLed.hpp"
+#include "esp/Storage.hpp"
 #include "esp/WifiTask.hpp"
 #include "esp/bt/BluetoothServer.hpp"
 #include "esp/sensors/Bmp180.hpp"
@@ -22,9 +23,10 @@ void app_main(void);
 class EspIoT : public smooth::core::Application {
     private:
     esp::RgbLed rgbLed;
+    esp::Storage storage;
     esp::WifiTask wifiTask;
     esp::sensors::Bmp180 bmp180;
-    esp::BluetoothServer btServer;
+    esp::bt::BluetoothServer btServer;
 
     public:
     EspIoT();

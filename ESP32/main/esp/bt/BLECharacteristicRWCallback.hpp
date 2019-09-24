@@ -3,7 +3,7 @@
 #include "BLECharacteristic.h"
 
 //---------------------------------------------------------------------------
-namespace espiot::esp {
+namespace espiot::esp::bt {
 //---------------------------------------------------------------------------
 class BLECharacteristicRWCallback : public BLECharacteristicCallbacks {
     private:
@@ -15,5 +15,5 @@ class BLECharacteristicRWCallback : public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic* characteristic) override;
 };
 //---------------------------------------------------------------------------
-} // namespace espiot::esp
+} // namespace espiot::esp::bt
 //---------------------------------------------------------------------------

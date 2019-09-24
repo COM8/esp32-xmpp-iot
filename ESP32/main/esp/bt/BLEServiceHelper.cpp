@@ -2,7 +2,7 @@
 #include <iostream>
 
 //---------------------------------------------------------------------------
-namespace espiot::esp {
+namespace espiot::esp::bt {
 //---------------------------------------------------------------------------
 const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_LANGUAGE("00002AA2-0000-1000-8000-00805F9B34FB");
 const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_HARDWARE_REVISION("00002A27-0000-1000-8000-00805F9B34FB");
@@ -123,22 +123,22 @@ void BLEServiceHelper::initDeviceInfoService(BLECharacteristicCallbacks* callbac
     BLEService* service = server->createService(UUID_SERVICE_DEVICE_INFORMATION);
 
     // Language:
-    BLECharacteristic* characteristic = service->createCharacteristic(
+    service->createCharacteristic(
         UUID_CHARACTERISTIC_LANGUAGE,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
     // Hardware Revision:
-    characteristic = service->createCharacteristic(
+    service->createCharacteristic(
         UUID_CHARACTERISTIC_HARDWARE_REVISION,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
     // Serial Number:
-    characteristic = service->createCharacteristic(
+    service->createCharacteristic(
         UUID_CHARACTERISTIC_SERIAL_NUMBER,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
     // Manufacturer Name:
-    characteristic = service->createCharacteristic(
+    service->createCharacteristic(
         UUID_CHARACTERISTIC_MANUFACTURER_NAME,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 }
@@ -198,5 +198,5 @@ void BLEServiceHelper::initChallengeResponseService(BLECharacteristicCallbacks* 
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 }
 //---------------------------------------------------------------------------
-} // namespace espiot::esp
+} // namespace espiot::esp::bt
 //---------------------------------------------------------------------------
