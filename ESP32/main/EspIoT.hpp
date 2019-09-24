@@ -4,7 +4,9 @@
 #include "esp/Storage.hpp"
 #include "esp/WifiTask.hpp"
 #include "esp/bt/BluetoothServer.hpp"
+#include "esp/bt/BluetoothServerCallback.hpp"
 #include "esp/sensors/Bmp180.hpp"
+#include <string>
 #include <smooth/core/Application.h>
 
 //---------------------------------------------------------------------------
@@ -20,7 +22,7 @@ void app_main(void);
 }
 #endif
 //---------------------------------------------------------------------------
-class EspIoT : public smooth::core::Application {
+class EspIoT : public smooth::core::Application, public esp::bt::BluetoothServerCallback {
     private:
     esp::RgbLed rgbLed;
     esp::Storage storage;
@@ -33,6 +35,7 @@ class EspIoT : public smooth::core::Application {
 
     void init() override;
     void tick() override;
+    void onConfigurationDone(std::string& wifiSsid, std::string& wifiPassword, std::string& jid, std::string& jidPassword) override;
 };
 //---------------------------------------------------------------------------
 } // namespace espiot

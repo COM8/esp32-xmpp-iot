@@ -7,6 +7,7 @@
 #include "BLEService.h"
 #include "BLEServiceHelper.hpp"
 #include "BLEUnlockHelper.hpp"
+#include "BluetoothServerCallback.hpp"
 #include "esp/RgbLed.hpp"
 #include "esp/Storage.hpp"
 #include <string>
@@ -25,6 +26,7 @@ class BluetoothServer : public BLECharacteristicCallbacks, public BLEServerCallb
     BLEServiceHelper serviceHelper;
     BLEAdvertising* advertising;
     BLEAdvertisementData advertisingData;
+    BluetoothServerCallback* serverCallback;
 
     public:
     BluetoothServer(RgbLed& rgbLed, Storage& storage);
@@ -35,6 +37,7 @@ class BluetoothServer : public BLECharacteristicCallbacks, public BLEServerCallb
     void init();
     void start();
     void stop();
+    void registerCallback(BluetoothServerCallback* serverCallback);
 
     void onRead(BLECharacteristic* characteristic) override;
     void onWrite(BLECharacteristic* characteristic) override;

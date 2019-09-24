@@ -76,6 +76,8 @@ void BLEServiceHelper::unlock(BLEServer* server) {
     service = server->getServiceByUUID(UUID_SERVICE_CHALLENGE_RESPONSE);
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_UNLOCKED);
     characteristic->setValue(1);
+
+    std::cout << "Bluetooth characteristics unlocked.\n";
 }
 
 void BLEServiceHelper::lock(BLEServer* server) {
@@ -117,6 +119,8 @@ void BLEServiceHelper::lock(BLEServer* server) {
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_UNLOCKED);
     characteristic->setValue(0);
+
+    std::cout << "Bluetooth characteristics locked.\n";
 }
 
 void BLEServiceHelper::initDeviceInfoService(BLECharacteristicCallbacks* callback, BLEServer* server) {

@@ -14,7 +14,8 @@ BluetoothServer::BluetoothServer(RgbLed& rgbLed, Storage& storage) : rgbLed(rgbL
                                                                      unlockHelper(),
                                                                      serviceHelper(getChipMacString()),
                                                                      advertising(nullptr),
-                                                                     advertisingData() {}
+                                                                     advertisingData(),
+                                                                     serverCallback(nullptr) {}
 
 bool BluetoothServer::isRunning() {
     return running;
@@ -76,7 +77,13 @@ void BluetoothServer::onWrite(BLECharacteristic* characteristic) {
             storage.writeString(Storage::JID_PASSWORD, value);
         } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_SETTINGS_DONE)) {
             storage.writeBool(Storage::INITIALIZED, true);
-            // TODO initialization done enable WIFI
+            if (serverCallback) {
+                std::string wifiSsid = storage.readString(Storage::WIFI_SSID);
+                std::string wifiPassword = storage.readString(Storage::WIFI_PASSWORD);
+                std::string jid = storage.readString(Storage::JID);
+                std::string jidPassword = storage.readString(Storage::JID_PASSWORD);
+                serverCallback->onConfigurationDone(wifiSsid, wifiPassword, jid, jidPassword);
+            }
         }
     }
 }
@@ -89,6 +96,10 @@ void BluetoothServer::onConnect(BLEServer* pServer) {
 void BluetoothServer::onDisconnect(BLEServer* pServer) {
     // Make sure we lock all information as soon as somebody disconnects:
     serviceHelper.lock(server);
+}
+
+void BluetoothServer::registerCallback(BluetoothServerCallback* serverCallback) {
+    this->serverCallback = serverCallback;
 }
 
 std::string BluetoothServer::getChipMacString() {

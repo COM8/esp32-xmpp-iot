@@ -1,6 +1,8 @@
 #include "EspIoT.hpp"
 #include "esp_log.h"
+#include "esp_system.h"
 #include <cstdio>
+#include <iostream>
 #include <smooth/core/task_priorities.h>
 
 //---------------------------------------------------------------------------
@@ -27,10 +29,14 @@ void EspIoT::init() {
     storage.init();
     rgbLed.turnOnOnly(rgbLed.r);
 
-    // Start the WIFI task:
-    // wifiTask.start();
-    btServer.init();
-    btServer.start();
+    if (storage.readBool(esp::Storage::INITIALIZED)) {
+        // Start the WIFI task:
+        wifiTask.start();
+    } else {
+        btServer.init();
+        btServer.registerCallback(this);
+        btServer.start();
+    }
     rgbLed.turnOff(rgbLed.r);
     rgbLed.turnOn(rgbLed.g);
 }
@@ -41,6 +47,16 @@ void EspIoT::tick() {
 
     int32_t pressure = bmp180.readPressure();
     printf("Pressure: %i\n", pressure);
+}
+
+void EspIoT::onConfigurationDone(std::string& wifiSsid, std::string& wifiPassword, std::string& jid, std::string& jidPassword) {
+    std::cout << "Bluetooth configuration done with:\n";
+    std::cout << "Wi-Fi SSID: " << wifiSsid << "\n";
+    std::cout << "Wi-Fi Password: " << wifiPassword << "\n";
+    std::cout << "JID: " << jid << "\n";
+    std::cout << "JID Password: " << jidPassword << std::endl;
+    // Restart
+    esp_restart();
 }
 //---------------------------------------------------------------------------
 } // namespace espiot
