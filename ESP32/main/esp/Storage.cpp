@@ -9,7 +9,7 @@ namespace espiot::esp {
 //---------------------------------------------------------------------------
 const std::string Storage::INITIALIZED = "initialized";
 const std::string Storage::WIFI_SSID = "wifi_ssid";
-const std::string Storage::WIFI_SSID_PASSWORD = "wifi_ssid_password";
+const std::string Storage::WIFI_PASSWORD = "wifi_password";
 const std::string Storage::JID = "jid";
 const std::string Storage::JID_PASSWORD = "jid_password";
 
@@ -38,7 +38,7 @@ void Storage::init() {
     }
 }
 
-bool Storage::readBool(std::string& key) {
+bool Storage::readBool(const std::string& key) {
     if (!ready) {
         std::cerr << "Initialize storage first!\n";
         return false;
@@ -47,7 +47,7 @@ bool Storage::readBool(std::string& key) {
     return readUInt8(key) == 1;
 }
 
-uint8_t Storage::readUInt8(std::string& key) {
+uint8_t Storage::readUInt8(const std::string& key) {
     if (!ready) {
         std::cerr << "Initialize storage first!\n";
         return false;
@@ -68,7 +68,7 @@ uint8_t Storage::readUInt8(std::string& key) {
     return 0;
 }
 
-uint16_t Storage::readUInt16(std::string& key) {
+uint16_t Storage::readUInt16(const std::string& key) {
     if (!ready) {
         std::cerr << "Initialize storage first!\n";
         return false;
@@ -89,7 +89,7 @@ uint16_t Storage::readUInt16(std::string& key) {
     return 0;
 }
 
-std::string Storage::readString(std::string& key) {
+std::string Storage::readString(const std::string& key) {
     if (!ready) {
         std::cerr << "Initialize storage first!\n";
         return "";
@@ -121,11 +121,11 @@ std::string Storage::readString(std::string& key) {
     return "";
 }
 
-void Storage::writeBool(std::string& key, bool value) {
+void Storage::writeBool(const std::string& key, bool value) {
     writeUInt8(key, static_cast<uint8_t>(value));
 }
 
-void Storage::writeUInt16(std::string& key, uint16_t value) {
+void Storage::writeUInt16(const std::string& key, uint16_t value) {
     if (!ready) {
         std::cerr << "Initialize storage first!\n";
         return;
@@ -141,7 +141,7 @@ void Storage::writeUInt16(std::string& key, uint16_t value) {
     }
 }
 
-void Storage::writeUInt8(std::string& key, uint8_t value) {
+void Storage::writeUInt8(const std::string& key, uint8_t value) {
     if (!ready) {
         std::cerr << "Initialize storage first!\n";
         return;
@@ -157,7 +157,7 @@ void Storage::writeUInt8(std::string& key, uint8_t value) {
     }
 }
 
-void Storage::writeString(std::string& key, std::string& value) {
+void Storage::writeString(const std::string& key, std::string& value) {
     if (!ready) {
         std::cerr << "Initialize storage first!\n";
         return;

@@ -18,7 +18,7 @@ EspIoT::EspIoT() : Application(smooth::core::APPLICATION_BASE_PRIO, std::chrono:
                    storage(),
                    wifiTask(get_wifi(), rgbLed),
                    bmp180(GPIO_NUM_32, GPIO_NUM_33),
-                   btServer(rgbLed){};
+                   btServer(rgbLed, storage){};
 
 void EspIoT::init() {
     // Set log level to DEBUG:

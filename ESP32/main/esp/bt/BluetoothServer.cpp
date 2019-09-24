@@ -7,12 +7,14 @@
 //---------------------------------------------------------------------------
 namespace espiot::esp::bt {
 //---------------------------------------------------------------------------
-BluetoothServer::BluetoothServer(RgbLed& rgbLed) : rgbLed(rgbLed),
-                                                   running(false),
-                                                   server(nullptr),
-                                                   serviceHelper(getChipMacString()),
-                                                   advertising(nullptr),
-                                                   advertisingData() {}
+BluetoothServer::BluetoothServer(RgbLed& rgbLed, Storage& storage) : rgbLed(rgbLed),
+                                                                     storage(storage),
+                                                                     running(false),
+                                                                     server(nullptr),
+                                                                     unlockHelper(),
+                                                                     serviceHelper(getChipMacString()),
+                                                                     advertising(nullptr),
+                                                                     advertisingData() {}
 
 bool BluetoothServer::isRunning() {
     return running;
@@ -55,8 +57,27 @@ void BluetoothServer::stop() {
 void BluetoothServer::onRead(BLECharacteristic* characteristic) {}
 
 void BluetoothServer::onWrite(BLECharacteristic* characteristic) {
-    if (characteristic->getValue() == "ready") {
-        serviceHelper.unlock(server);
+    if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_WRITE)) {
+        std::string value = characteristic->getValue();
+        unlockHelper.onChallengeAnswer(value);
+
+        if (!unlockHelper.isLocked()) {
+            serviceHelper.unlock(server);
+        }
+    } else if (!unlockHelper.isLocked()) {
+        std::string value = characteristic->getValue();
+        if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_WIFI_SSID)) {
+            storage.writeString(Storage::WIFI_SSID, value);
+        } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_WIFI_PASSWORD)) {
+            storage.writeString(Storage::WIFI_PASSWORD, value);
+        } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_JID)) {
+            storage.writeString(Storage::JID, value);
+        } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_JID_PASSWORD)) {
+            storage.writeString(Storage::JID_PASSWORD, value);
+        } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_SETTINGS_DONE)) {
+            storage.writeBool(Storage::INITIALIZED, true);
+            // TODO initialization done enable WIFI
+        }
     }
 }
 

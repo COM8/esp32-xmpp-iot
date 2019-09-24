@@ -3,11 +3,12 @@
 #include "BLE2902.h"
 #include "BLEAdvertising.h"
 #include "BLECharacteristic.h"
-#include "BLECharacteristicRWCallback.hpp"
 #include "BLEServer.h"
 #include "BLEService.h"
 #include "BLEServiceHelper.hpp"
+#include "BLEUnlockHelper.hpp"
 #include "esp/RgbLed.hpp"
+#include "esp/Storage.hpp"
 #include <string>
 
 //---------------------------------------------------------------------------
@@ -16,15 +17,17 @@ namespace espiot::esp::bt {
 class BluetoothServer : public BLECharacteristicCallbacks, public BLEServerCallbacks {
     private:
     RgbLed& rgbLed;
+    Storage& storage;
     bool running;
 
     BLEServer* server;
+    BLEUnlockHelper unlockHelper;
     BLEServiceHelper serviceHelper;
     BLEAdvertising* advertising;
     BLEAdvertisementData advertisingData;
 
     public:
-    BluetoothServer(RgbLed& rgbLed);
+    BluetoothServer(RgbLed& rgbLed, Storage& storage);
     ~BluetoothServer() = default;
 
     bool isRunning();
