@@ -6,6 +6,7 @@ namespace espiot::esp::bt {
 //---------------------------------------------------------------------------
 const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_LANGUAGE("00002AA2-0000-1000-8000-00805F9B34FB");
 const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_HARDWARE_REVISION("00002A27-0000-1000-8000-00805F9B34FB");
+const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_SOFTWARE_REVISION("00002A28-0000-1000-8000-00805F9B34FB");
 const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_SERIAL_NUMBER("00002A25-0000-1000-8000-00805F9B34FB");
 const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_MANUFACTURER_NAME("00002A29-0000-1000-8000-00805F9B34FB");
 const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_WIFI_SSID("00000001-0000-0000-0000-000000000002");
@@ -66,6 +67,9 @@ void BLEServiceHelper::unlock(BLEServer* server) {
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_HARDWARE_REVISION);
     characteristic->setValue("1.0");
 
+    characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_SOFTWARE_REVISION);
+    characteristic->setValue("1.0");
+
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_SERIAL_NUMBER);
     characteristic->setValue(btMac);
 
@@ -87,6 +91,9 @@ void BLEServiceHelper::lock(BLEServer* server) {
     characteristic->setValue("");
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_HARDWARE_REVISION);
+    characteristic->setValue("");
+
+    characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_SOFTWARE_REVISION);
     characteristic->setValue("");
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_SERIAL_NUMBER);
@@ -134,6 +141,11 @@ void BLEServiceHelper::initDeviceInfoService(BLECharacteristicCallbacks* callbac
     // Hardware Revision:
     service->createCharacteristic(
         UUID_CHARACTERISTIC_HARDWARE_REVISION,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+
+    // Software Revision:
+    service->createCharacteristic(
+        UUID_CHARACTERISTIC_SOFTWARE_REVISION,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
     // Serial Number:

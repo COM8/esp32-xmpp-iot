@@ -32,6 +32,9 @@ class BLEServiceHelper {
     // Source: https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Characteristics/org.bluetooth.characteristic.hardware_revision_string.xml
     static const BLEUUID UUID_CHARACTERISTIC_HARDWARE_REVISION;
     // Format: utf8s
+    // Source: https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Characteristics/org.bluetooth.characteristic.software_revision_string.xml
+    static const BLEUUID UUID_CHARACTERISTIC_SOFTWARE_REVISION;
+    // Format: utf8s
     // Source: https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Characteristics/org.bluetooth.characteristic.serial_number_string.xml
     static const BLEUUID UUID_CHARACTERISTIC_SERIAL_NUMBER;
     // Format: utf8s
