@@ -1,9 +1,12 @@
 #pragma once
 
+#include "BLE2902.h"
+#include "BLE2904.h"
 #include "BLECharacteristic.h"
 #include "BLEServer.h"
 #include "BLEUUID.h"
 #include <string>
+#include <vector>
 
 //---------------------------------------------------------------------------
 namespace espiot::esp::bt {
@@ -11,7 +14,15 @@ namespace espiot::esp::bt {
 class BLEServiceHelper {
     private:
     std::string btMac;
+    // Client Characteristic Configuration
+    // Source: https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Descriptors/org.bluetooth.descriptor.gatt.client_characteristic_configuration.xml
+    std::vector<BLE2902*> cCCDescriptors;
+    // Characteristic User Description
+    // Source: https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Descriptors/org.bluetooth.descriptor.gatt.characteristic_user_description.xml
+    std::vector<BLEDescriptor*> cUDDescriptors;
 
+    BLE2902* getNewCCCDescriptor(bool enableNotify, bool enableIndicate);
+    BLEDescriptor* getNewCUDDescriptor(std::string description);
     void initDeviceInfoService(BLECharacteristicCallbacks* callback, BLEServer* server);
     void initDeviceSettingsService(BLECharacteristicCallbacks* callback, BLEServer* server);
     void initChallengeResponseService(BLECharacteristicCallbacks* callback, BLEServer* server);
@@ -72,8 +83,10 @@ class BLEServiceHelper {
     static const BLEUUID UUID_SERVICE_CHALLENGE_RESPONSE;
 
     BLEServiceHelper(std::string btMac);
+    ~BLEServiceHelper();
 
-    void init(BLECharacteristicCallbacks* callback, BLEServer* server);
+    void
+    init(BLECharacteristicCallbacks* callback, BLEServer* server);
     void start(BLEServer* server);
     void stop(BLEServer* server);
     void unlock(BLEServer* server);

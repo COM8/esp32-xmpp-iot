@@ -22,7 +22,34 @@ const BLEUUID BLEServiceHelper::UUID_SERVICE_DEVICE_INFORMATION("0000180A-0000-1
 const BLEUUID BLEServiceHelper::UUID_SERVICE_DEVICE_SETTINGS("00000001-0000-0000-0000-000000000001");
 const BLEUUID BLEServiceHelper::UUID_SERVICE_CHALLENGE_RESPONSE("00000002-0000-0000-0000-000000000001");
 
-BLEServiceHelper::BLEServiceHelper(std::string btMac) : btMac(btMac) {}
+BLEServiceHelper::BLEServiceHelper(std::string btMac) : btMac(btMac),
+                                                        cCCDescriptors(7),
+                                                        cUDDescriptors(7) {}
+
+BLEServiceHelper::~BLEServiceHelper() {
+    for (BLE2902* desc : cCCDescriptors) {
+        delete desc;
+    }
+
+    for (BLEDescriptor* desc : cUDDescriptors) {
+        delete desc;
+    }
+}
+
+BLE2902* BLEServiceHelper::getNewCCCDescriptor(bool enableNotify, bool enableIndicate) {
+    BLE2902* desc = new BLE2902();
+    desc->setNotifications(enableNotify);
+    desc->setIndications(enableIndicate);
+    cCCDescriptors.push_back(desc);
+    return desc;
+}
+
+BLEDescriptor* BLEServiceHelper::getNewCUDDescriptor(std::string description) {
+    BLEDescriptor* desc = new BLEDescriptor(BLEUUID(static_cast<uint16_t>(0x2901)));
+    desc->setValue(description);
+    cUDDescriptors.push_back(desc);
+    return desc;
+}
 
 void BLEServiceHelper::init(BLECharacteristicCallbacks* callback, BLEServer* server) {
     initDeviceInfoService(callback, server);
@@ -134,29 +161,34 @@ void BLEServiceHelper::initDeviceInfoService(BLECharacteristicCallbacks* callbac
     BLEService* service = server->createService(UUID_SERVICE_DEVICE_INFORMATION);
 
     // Language:
-    service->createCharacteristic(
-        UUID_CHARACTERISTIC_LANGUAGE,
-        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+    BLECharacteristic* characteristic = service->createCharacteristic(UUID_CHARACTERISTIC_LANGUAGE,
+                                                                      BLECharacteristic::PROPERTY_READ |
+                                                                          BLECharacteristic::PROPERTY_NOTIFY);
+    characteristic->addDescriptor(getNewCCCDescriptor(true, false));
 
     // Hardware Revision:
-    service->createCharacteristic(
+    characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_HARDWARE_REVISION,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+    characteristic->addDescriptor(getNewCCCDescriptor(true, false));
 
     // Software Revision:
-    service->createCharacteristic(
+    characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_SOFTWARE_REVISION,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+    characteristic->addDescriptor(getNewCCCDescriptor(true, false));
 
     // Serial Number:
-    service->createCharacteristic(
+    characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_SERIAL_NUMBER,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+    characteristic->addDescriptor(getNewCCCDescriptor(true, false));
 
     // Manufacturer Name:
-    service->createCharacteristic(
+    characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_MANUFACTURER_NAME,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+    characteristic->addDescriptor(getNewCCCDescriptor(true, false));
 }
 
 void BLEServiceHelper::initDeviceSettingsService(BLECharacteristicCallbacks* callback, BLEServer* server) {
@@ -167,30 +199,35 @@ void BLEServiceHelper::initDeviceSettingsService(BLECharacteristicCallbacks* cal
         UUID_CHARACTERISTIC_WIFI_SSID,
         BLECharacteristic::PROPERTY_WRITE);
     characteristic->setCallbacks(callback);
+    characteristic->addDescriptor(getNewCUDDescriptor("Wi-Fi SSID"));
 
     // WiFi Password:
     characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_WIFI_PASSWORD,
         BLECharacteristic::PROPERTY_WRITE);
     characteristic->setCallbacks(callback);
+    characteristic->addDescriptor(getNewCUDDescriptor("Wi-Fi Password"));
 
     // JID:
     characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_JID,
         BLECharacteristic::PROPERTY_WRITE);
     characteristic->setCallbacks(callback);
+    characteristic->addDescriptor(getNewCUDDescriptor("JID"));
 
     // JID Password:
     characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_JID_PASSWORD,
         BLECharacteristic::PROPERTY_WRITE);
     characteristic->setCallbacks(callback);
+    characteristic->addDescriptor(getNewCUDDescriptor("JID Password"));
 
     // Settings done:
     characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_SETTINGS_DONE,
         BLECharacteristic::PROPERTY_WRITE);
     characteristic->setCallbacks(callback);
+    characteristic->addDescriptor(getNewCUDDescriptor("Settings Done"));
 }
 
 void BLEServiceHelper::initChallengeResponseService(BLECharacteristicCallbacks* callback, BLEServer* server) {
@@ -201,17 +238,21 @@ void BLEServiceHelper::initChallengeResponseService(BLECharacteristicCallbacks* 
         UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_READ,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
     characteristic->setCallbacks(callback);
+    characteristic->addDescriptor(getNewCCCDescriptor(true, false));
+    characteristic->addDescriptor(getNewCUDDescriptor("Challenge Response Read"));
 
     // Write:
     characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_WRITE,
         BLECharacteristic::PROPERTY_WRITE);
     characteristic->setCallbacks(callback);
+    characteristic->addDescriptor(getNewCUDDescriptor("Challenge Response Write"));
 
     // Unlocked:
     characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_UNLOCKED,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+    characteristic->addDescriptor(getNewCUDDescriptor("Challenge Response Unlocked"));
 }
 //---------------------------------------------------------------------------
 } // namespace espiot::esp::bt
