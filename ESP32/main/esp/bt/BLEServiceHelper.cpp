@@ -13,10 +13,11 @@ const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_WIFI_SSID("00000001-0000-000
 const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_WIFI_PASSWORD("00000002-0000-0000-0000-000000000002");
 const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_JID("00000003-0000-0000-0000-000000000002");
 const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_JID_PASSWORD("00000004-0000-0000-0000-000000000002");
-const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_SETTINGS_DONE("00000005-0000-0000-0000-000000000002");
-const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_READ("00000006-0000-0000-0000-000000000002");
-const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_WRITE("00000007-0000-0000-0000-000000000002");
-const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_UNLOCKED("00000008-0000-0000-0000-000000000002");
+const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_JID_SENDER("00000005-0000-0000-0000-000000000002");
+const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_SETTINGS_DONE("00000006-0000-0000-0000-000000000002");
+const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_READ("00000007-0000-0000-0000-000000000002");
+const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_WRITE("00000008-0000-0000-0000-000000000002");
+const BLEUUID BLEServiceHelper::UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_UNLOCKED("00000009-0000-0000-0000-000000000002");
 
 const BLEUUID BLEServiceHelper::UUID_SERVICE_DEVICE_INFORMATION("0000180A-0000-1000-8000-00805F9B34FB");
 const BLEUUID BLEServiceHelper::UUID_SERVICE_DEVICE_SETTINGS("00000001-0000-0000-0000-000000000001");
@@ -90,23 +91,29 @@ void BLEServiceHelper::unlock(BLEServer* server) {
     BLEService* service = server->getServiceByUUID(UUID_SERVICE_DEVICE_INFORMATION);
     BLECharacteristic* characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_LANGUAGE);
     characteristic->setValue("en");
+    characteristic->notify();
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_HARDWARE_REVISION);
     characteristic->setValue("1.0");
+    characteristic->notify();
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_SOFTWARE_REVISION);
     characteristic->setValue("1.0");
+    characteristic->notify();
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_SERIAL_NUMBER);
     characteristic->setValue(btMac);
+    characteristic->notify();
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_MANUFACTURER_NAME);
     characteristic->setValue("TUM Garching");
+    characteristic->notify();
 
     // Challenge response:
     service = server->getServiceByUUID(UUID_SERVICE_CHALLENGE_RESPONSE);
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_UNLOCKED);
     characteristic->setValue(1);
+    characteristic->notify();
 
     std::cout << "Bluetooth characteristics unlocked.\n";
 }
@@ -116,18 +123,23 @@ void BLEServiceHelper::lock(BLEServer* server) {
     BLEService* service = server->getServiceByUUID(UUID_SERVICE_DEVICE_INFORMATION);
     BLECharacteristic* characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_LANGUAGE);
     characteristic->setValue("");
+    characteristic->notify();
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_HARDWARE_REVISION);
     characteristic->setValue("");
+    characteristic->notify();
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_SOFTWARE_REVISION);
     characteristic->setValue("");
+    characteristic->notify();
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_SERIAL_NUMBER);
     characteristic->setValue("");
+    characteristic->notify();
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_MANUFACTURER_NAME);
     characteristic->setValue("");
+    characteristic->notify();
 
     // Device settings:
     service = server->getServiceByUUID(UUID_SERVICE_DEVICE_SETTINGS);
@@ -143,16 +155,21 @@ void BLEServiceHelper::lock(BLEServer* server) {
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_JID_PASSWORD);
     characteristic->setValue("");
 
+    characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_JID_SENDER);
+    characteristic->setValue("");
+
     // Challenge response:
     service = server->getServiceByUUID(UUID_SERVICE_CHALLENGE_RESPONSE);
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_READ);
     characteristic->setValue("");
+    characteristic->notify();
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_WRITE);
     characteristic->setValue("");
 
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_UNLOCKED);
     characteristic->setValue(0);
+    characteristic->notify();
 
     std::cout << "Bluetooth characteristics locked.\n";
 }
@@ -222,6 +239,13 @@ void BLEServiceHelper::initDeviceSettingsService(BLECharacteristicCallbacks* cal
     characteristic->setCallbacks(callback);
     characteristic->addDescriptor(getNewCUDDescriptor("JID Password"));
 
+    // JID Sender:
+    characteristic = service->createCharacteristic(
+        UUID_CHARACTERISTIC_JID_SENDER,
+        BLECharacteristic::PROPERTY_WRITE);
+    characteristic->setCallbacks(callback);
+    characteristic->addDescriptor(getNewCUDDescriptor("JID Sender"));
+
     // Settings done:
     characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_SETTINGS_DONE,
@@ -252,6 +276,7 @@ void BLEServiceHelper::initChallengeResponseService(BLECharacteristicCallbacks* 
     characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_UNLOCKED,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+    characteristic->addDescriptor(getNewCCCDescriptor(true, false));
     characteristic->addDescriptor(getNewCUDDescriptor("Challenge Response Unlocked"));
 }
 //---------------------------------------------------------------------------

@@ -60,6 +60,8 @@ class BLEServiceHelper {
     // Custom UUID
     static const BLEUUID UUID_CHARACTERISTIC_JID_PASSWORD;
     // Custom UUID
+    static const BLEUUID UUID_CHARACTERISTIC_JID_SENDER;
+    // Custom UUID
     static const BLEUUID UUID_CHARACTERISTIC_SETTINGS_DONE;
     // Custom UUID
     static const BLEUUID UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_READ;
