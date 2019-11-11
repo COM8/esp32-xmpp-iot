@@ -13,7 +13,7 @@ using namespace smooth::core;
 WifiTask::WifiTask(network::Wifi& wifi, RgbLed& rgbLed) : Task("WIFI Task", smooth::core::APPLICATION_BASE_PRIO, 0, std::chrono::seconds(1), 1),
                                                           wifi(wifi),
                                                           rgbLed(rgbLed),
-                                                          net_status(NetworkStatusQueue::create("", 2, *this, *this)) {}
+                                                          net_status(NetworkStatusQueue::create(2, *this, *this)) {}
 
 void WifiTask::init() {
     std::cout << "Scanning for wifi...\n";
