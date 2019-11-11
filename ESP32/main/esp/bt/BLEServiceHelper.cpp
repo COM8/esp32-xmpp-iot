@@ -160,6 +160,9 @@ void BLEServiceHelper::lock(BLEServer* server) {
 
     // Challenge response:
     service = server->getServiceByUUID(UUID_SERVICE_CHALLENGE_RESPONSE);
+    characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_SETTINGS_DONE);
+    characteristic->setValue(0);
+
     characteristic = service->getCharacteristic(UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_READ);
     characteristic->setValue("");
     characteristic->notify();
@@ -245,20 +248,21 @@ void BLEServiceHelper::initDeviceSettingsService(BLECharacteristicCallbacks* cal
         BLECharacteristic::PROPERTY_WRITE);
     characteristic->setCallbacks(callback);
     characteristic->addDescriptor(getNewCUDDescriptor("JID Sender"));
-
-    // Settings done:
-    characteristic = service->createCharacteristic(
-        UUID_CHARACTERISTIC_SETTINGS_DONE,
-        BLECharacteristic::PROPERTY_WRITE);
-    characteristic->setCallbacks(callback);
-    characteristic->addDescriptor(getNewCUDDescriptor("Settings Done"));
 }
 
 void BLEServiceHelper::initChallengeResponseService(BLECharacteristicCallbacks* callback, BLEServer* server) {
     BLEService* service = server->createService(UUID_SERVICE_CHALLENGE_RESPONSE);
 
-    // Read:
+    // Settings done:
+    // Has to be added here since it looks like there is a limit of 5 characteristics per service:
     BLECharacteristic* characteristic = service->createCharacteristic(
+        UUID_CHARACTERISTIC_SETTINGS_DONE,
+        BLECharacteristic::PROPERTY_WRITE);
+    characteristic->setCallbacks(callback);
+    characteristic->addDescriptor(getNewCUDDescriptor("Settings Done"));
+
+    // Read:
+    characteristic = service->createCharacteristic(
         UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_READ,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
     characteristic->setCallbacks(callback);
