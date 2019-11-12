@@ -1,6 +1,8 @@
 #include "EspIoT.hpp"
+#include "esp/WiFiCredentials.hpp"
 #include "esp_log.h"
 #include "esp_system.h"
+#include "xmpp/XmppCredentials.hpp"
 #include <cstdio>
 #include <iostream>
 #include <smooth/core/task_priorities.h>
@@ -21,7 +23,18 @@ EspIoT::EspIoT() : Application(smooth::core::APPLICATION_BASE_PRIO, std::chrono:
                    storage(),
                    wifiTask(get_wifi(), rgbLed),
                    bmp180(GPIO_NUM_32, GPIO_NUM_33),
-                   btServer(rgbLed, storage){};
+                   btServer(rgbLed, storage),
+                   xmppTask(storage){};
+
+void EspIoT::initWithDummyValues() {
+    storage.writeString(esp::Storage::JID, xmpp::JID);
+    storage.writeString(esp::Storage::JID_PASSWORD, xmpp::JID_PASSWORD);
+    storage.writeString(esp::Storage::JID_SENDER, xmpp::JID_SENDER);
+    storage.writeString(esp::Storage::WIFI_SSID, esp::SSID);
+    storage.writeString(esp::Storage::WIFI_PASSWORD, esp::PASSWORD);
+    storage.writeBool(esp::Storage::INITIALIZED, true);
+    std::cout << "INITIALIZED WITH DUMMY VALUES!" << std::endl;
+}
 
 void EspIoT::init() {
     // Set log level to DEBUG:
@@ -29,6 +42,8 @@ void EspIoT::init() {
 
     storage.init();
     rgbLed.turnOnOnly(rgbLed.r);
+
+    initWithDummyValues();
 
     // Check if reset button is pressen:
     if (resetButton.isPressed()) {
@@ -39,6 +54,7 @@ void EspIoT::init() {
     if (storage.readBool(esp::Storage::INITIALIZED)) {
         // Start the WIFI task:
         wifiTask.start();
+        xmppTask.start();
     } else {
         btServer.init();
         btServer.registerCallback(this);

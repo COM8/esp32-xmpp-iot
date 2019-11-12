@@ -7,6 +7,7 @@
 #include "esp/bt/BluetoothServer.hpp"
 #include "esp/bt/BluetoothServerCallback.hpp"
 #include "esp/sensors/Bmp180.hpp"
+#include "xmpp/XmppTask.hpp"
 #include <string>
 #include <smooth/core/Application.h>
 
@@ -31,6 +32,9 @@ class EspIoT : public smooth::core::Application, public esp::bt::BluetoothServer
     esp::WifiTask wifiTask;
     esp::sensors::Bmp180 bmp180;
     esp::bt::BluetoothServer btServer;
+    xmpp::XmppTask xmppTask;
+
+    void initWithDummyValues();
 
     public:
     EspIoT();

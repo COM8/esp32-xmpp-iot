@@ -15,9 +15,8 @@ class XmppAccount {
     const Jid jid;
     const std::string password;
     InetAddress_sp server;
-    const uint16_t port;
 
-    XmppAccount(const Jid&& jid, const std::string&& password, const InetAddress_sp server, const uint16_t port);
+    XmppAccount(const Jid&& jid, const std::string&& password, const InetAddress_sp server);
 };
 //---------------------------------------------------------------------------
 } // namespace espiot::xmpp

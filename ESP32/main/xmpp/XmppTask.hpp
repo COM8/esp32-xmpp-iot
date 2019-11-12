@@ -6,6 +6,7 @@
 #include <smooth/core/Task.h>
 #include <smooth/core/ipc/IEventListener.h>
 #include <smooth/core/ipc/SubscribingTaskEventQueue.h>
+#include <smooth/core/network/IPv4.h>
 #include <smooth/core/network/NetworkStatus.h>
 
 //---------------------------------------------------------------------------
@@ -23,7 +24,7 @@ class XmppTask : public smooth::core::Task,
     esp::Storage& storage;
 
     public:
-    XmppTask(Storage& storage);
+    XmppTask(esp::Storage& storage);
 
     void init() override;
 

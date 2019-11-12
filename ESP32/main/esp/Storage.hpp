@@ -26,7 +26,7 @@ class Storage {
     void writeBool(const std::string& key, bool value);
     void writeUInt16(const std::string& key, uint16_t value);
     void writeUInt8(const std::string& key, uint8_t value);
-    void writeString(const std::string& key, std::string& value);
+    void writeString(const std::string& key, const std::string& value);
 
     private:
     bool ready;
