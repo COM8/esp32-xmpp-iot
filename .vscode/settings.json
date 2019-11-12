@@ -93,7 +93,8 @@
         "valarray": "cpp",
         "variant": "cpp",
         "system_api.c": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "format": "cpp"
     },
     "files.watcherExclude": {
         "**/.git/objects/**": true,

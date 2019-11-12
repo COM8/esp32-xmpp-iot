@@ -16,7 +16,13 @@ set(SOURCES EspIoT.cpp
             esp/bt/BLEUnlockHelper.cpp
             esp/bt/BluetoothServerCallback.cpp
             
-            esp/sensors/Bmp180.cpp)
+            esp/sensors/Bmp180.cpp
+            
+            xmpp/XmppClient.cpp
+            xmpp/XmppConnection.cpp
+            xmpp/XmppAccount.cpp
+            xmpp/XmppTask.cpp
+            xmpp/tcp/TcpConnection.cpp)
 
 idf_component_register(SRCS ${SOURCES}
                        INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR} $ENV{IDF_PATH}/components

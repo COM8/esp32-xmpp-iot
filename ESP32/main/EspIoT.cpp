@@ -62,12 +62,13 @@ void EspIoT::tick() {
     }
 }
 
-void EspIoT::onConfigurationDone(std::string& wifiSsid, std::string& wifiPassword, std::string& jid, std::string& jidPassword) {
+void EspIoT::onConfigurationDone(std::string& wifiSsid, std::string& wifiPassword, std::string& jid, std::string& jidPassword, std::string& jidSender) {
     std::cout << "Bluetooth configuration done with:\n";
     std::cout << "Wi-Fi SSID: " << wifiSsid << "\n";
     std::cout << "Wi-Fi Password: " << wifiPassword << "\n";
     std::cout << "JID: " << jid << "\n";
-    std::cout << "JID Password: " << jidPassword << std::endl;
+    std::cout << "JID Password: " << jidPassword << "\n";
+    std::cout << "JID Sender: " << jidSender << std::endl;
     // Restart
     esp_restart();
 }

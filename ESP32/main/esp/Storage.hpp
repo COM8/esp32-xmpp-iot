@@ -13,6 +13,7 @@ class Storage {
     static const std::string WIFI_PASSWORD;
     static const std::string JID;
     static const std::string JID_PASSWORD;
+    static const std::string JID_SENDER;
 
     Storage() = default;
     void init();

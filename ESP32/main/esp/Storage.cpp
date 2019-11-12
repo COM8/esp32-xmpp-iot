@@ -12,6 +12,7 @@ const std::string Storage::WIFI_SSID = "wifi_ssid";
 const std::string Storage::WIFI_PASSWORD = "wifi_password";
 const std::string Storage::JID = "jid";
 const std::string Storage::JID_PASSWORD = "jid_password";
+const std::string Storage::JID_SENDER = "jid_password";
 
 void Storage::init() {
     // Initialize NVS

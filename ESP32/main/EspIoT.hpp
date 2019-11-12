@@ -37,7 +37,7 @@ class EspIoT : public smooth::core::Application, public esp::bt::BluetoothServer
 
     void init() override;
     void tick() override;
-    void onConfigurationDone(std::string& wifiSsid, std::string& wifiPassword, std::string& jid, std::string& jidPassword) override;
+    void onConfigurationDone(std::string& wifiSsid, std::string& wifiPassword, std::string& jid, std::string& jidPassword, std::string& jidSender) override;
 };
 //---------------------------------------------------------------------------
 } // namespace espiot
