@@ -3,8 +3,9 @@
 //---------------------------------------------------------------------------
 namespace espiot::xmpp {
 //---------------------------------------------------------------------------
-XmppConnection::XmppConnection(const XmppAccount* account) : account(account),
-                                                             tcpConnection(account) {}
+XmppConnection::XmppConnection(const XmppAccount* account, smooth::core::Task& task) : account(account),
+                                                                                       tcpConnection(account, task),
+                                                                                       task(task) {}
 
 void XmppConnection::connect() {
     tcpConnection.connect();

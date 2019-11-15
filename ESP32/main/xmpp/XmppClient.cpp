@@ -4,8 +4,9 @@
 //---------------------------------------------------------------------------
 namespace espiot::xmpp {
 //---------------------------------------------------------------------------
-XmppClient::XmppClient(const XmppAccount&& account) : account(account),
-                                                      connection(&(this->account)) {}
+XmppClient::XmppClient(const XmppAccount&& account, smooth::core::Task& task) : account(account),
+                                                                                connection(&(this->account), task),
+                                                                                task(task) {}
 void XmppClient::connect() {
     std::cout << "XMPP Client connecting..." << std::endl;
     connection.connect();

@@ -10,7 +10,7 @@ namespace espiot::xmpp {
 //---------------------------------------------------------------------------
 using namespace smooth::core;
 //---------------------------------------------------------------------------
-XmppTask::XmppTask(esp::Storage& storage) : Task("XMPP Task", smooth::core::APPLICATION_BASE_PRIO, 0, std::chrono::seconds(1), 1),
+XmppTask::XmppTask(esp::Storage& storage) : Task("XMPP Task", 4096, smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(1), 1),
                                             net_status(NetworkStatusQueue::create(2, *this, *this)),
                                             client(nullptr),
                                             storage(storage) {}
@@ -21,7 +21,7 @@ void XmppTask::init() {
     jid.print();
     std::string password = storage.readString(esp::Storage::JID_PASSWORD);
     xmpp::XmppAccount account(std::move(jid), std::move(password), std::make_shared<smooth::core::network::IPv4>(SERVER_IP, SERVER_PORT));
-    client = std::make_unique<xmpp::XmppClient>(std::move(account));
+    client = std::make_unique<xmpp::XmppClient>(std::move(account), *this);
 }
 
 void XmppTask::event(const network::NetworkStatus& event) {

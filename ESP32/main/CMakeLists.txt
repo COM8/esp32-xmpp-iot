@@ -22,7 +22,11 @@ set(SOURCES EspIoT.cpp
             xmpp/XmppConnection.cpp
             xmpp/XmppAccount.cpp
             xmpp/XmppTask.cpp
-            xmpp/tcp/TcpConnection.cpp)
+            xmpp/XmppUtils.cpp
+
+            xmpp/tcp/TcpConnection.cpp
+            xmpp/tcp/XmppProtocol.cpp
+            xmpp/tcp/XmppPacket.cpp)
 
 idf_component_register(SRCS ${SOURCES}
                        INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR} $ENV{IDF_PATH}/components

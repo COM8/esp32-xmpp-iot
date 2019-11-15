@@ -10,7 +10,7 @@ namespace espiot::esp {
 //---------------------------------------------------------------------------
 using namespace smooth::core;
 //---------------------------------------------------------------------------
-WifiTask::WifiTask(network::Wifi& wifi, RgbLed& rgbLed) : Task("WIFI Task", smooth::core::APPLICATION_BASE_PRIO, 0, std::chrono::seconds(1), 1),
+WifiTask::WifiTask(network::Wifi& wifi, RgbLed& rgbLed) : Task("WIFI Task", 0, smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(1), 1),
                                                           wifi(wifi),
                                                           rgbLed(rgbLed),
                                                           net_status(NetworkStatusQueue::create(2, *this, *this)) {}
