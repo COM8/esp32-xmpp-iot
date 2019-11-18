@@ -4,6 +4,7 @@
 #include "XmppPacket.hpp"
 #include "XmppProtocol.hpp"
 #include <memory>
+#include <string>
 #include <smooth/application/network/http/IResponseOperation.h>
 #include <smooth/core/ipc/IEventListener.h>
 #include <smooth/core/network/BufferContainer.h>
@@ -34,6 +35,9 @@ class TcpConnection : public smooth::core::ipc::IEventListener<smooth::core::net
 
     void connect();
     void disconnect();
+
+    bool send(std::string& msg);
+    bool send(std::wstring& msg);
 };
 //---------------------------------------------------------------------------
 } // namespace espiot::xmpp::tcp
