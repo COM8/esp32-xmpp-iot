@@ -26,11 +26,15 @@ set(SOURCES EspIoT.cpp
 
             xmpp/tcp/TcpConnection.cpp
             xmpp/tcp/XmppProtocol.cpp
-            xmpp/tcp/XmppPacket.cpp)
+            xmpp/tcp/XmppPacket.cpp
+            
+            xmpp/messages/MessageParser.cpp
+            
+            xmpp/crypto/CryptoUtils.cpp)
 
 idf_component_register(SRCS ${SOURCES}
                        INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR} $ENV{IDF_PATH}/components
-                       REQUIRES smooth_component bt cpp_utils)
+                       REQUIRES smooth_component bt cpp_utils mbedtls)
 
 
 # -----------------------Tiny-XML-2-----------------------
