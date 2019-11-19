@@ -9,6 +9,9 @@
 namespace espiot::xmpp::tcp {
 //---------------------------------------------------------------------------
 class XmppPacket : public smooth::core::network::IPacketDisassembly {
+    public:
+    static const size_t PACKET_SIZE = 1024;
+
     private:
     std::vector<uint8_t> data{};
 
@@ -35,6 +38,7 @@ class XmppPacket : public smooth::core::network::IPacketDisassembly {
     [[nodiscard]] std::wstring to_wstring() const;
     [[nodiscard]] std::string to_string() const;
     [[nodiscard]] std::size_t size() const;
+    void resize(std::size_t newSize);
 };
 //---------------------------------------------------------------------------
 } // namespace espiot::xmpp::tcp

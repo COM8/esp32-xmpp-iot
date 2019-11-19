@@ -9,6 +9,10 @@ namespace espiot::xmpp::tcp {
 
 class XmppProtocol
     : public smooth::core::network::IPacketAssembly<XmppProtocol, XmppPacket> {
+    private:
+    std::size_t offset{0};
+    bool complete{false};
+
     public:
     using packet_type = XmppPacket;
 

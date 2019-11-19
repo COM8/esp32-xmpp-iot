@@ -1,38 +1,48 @@
 #include "XmppProtocol.hpp"
+#include "../XmppUtils.hpp"
 #include <iostream>
 
 //---------------------------------------------------------------------------
 namespace espiot::xmpp::tcp {
 //---------------------------------------------------------------------------
 int XmppProtocol::get_wanted_amount(XmppPacket& packet) {
-    return static_cast<int>(packet.size());
+    return XmppPacket::PACKET_SIZE;
 }
 
 void XmppProtocol::data_received(XmppPacket& packet, int length) {
-    std::cout << "Data received: " << packet.to_string() << std::endl;
+    complete = length < XmppPacket::PACKET_SIZE;
+    offset += length;
+
+    // Resize for the next packet:
+    if (!complete) {
+        packet.resize(offset + XmppPacket::PACKET_SIZE);
+    }
 }
 
 uint8_t* XmppProtocol::get_write_pos(XmppPacket& packet) {
-    std::cout << "CALL get_write_pos" << std::endl;
-    return packet.get_data_vec().data();
+    size_t maxSize = offset + XmppPacket::PACKET_SIZE;
+    if (packet.size() < maxSize) {
+        std::cout << "Resizing packet from " << packet.size() << " to " << maxSize << "\n";
+        packet.resize(maxSize);
+    }
+    return packet.get_data_vec().data() + offset;
 }
 
 bool XmppProtocol::is_complete(XmppPacket& packet) const {
-    std::cout << "CALL is_complete" << std::endl;
-    return true;
+    return complete;
 }
 
 bool XmppProtocol::is_error() {
-    std::cout << "CALL is_error" << std::endl;
     return false;
 }
 
 void XmppProtocol::packet_consumed() {
-    std::cout << "CALL packet_consumed" << std::endl;
+    complete = false;
+    offset = 0;
 }
 
 void XmppProtocol::reset() {
-    std::cout << "CALL reset" << std::endl;
+    packet_consumed();
 }
 //---------------------------------------------------------------------------
 } // namespace espiot::xmpp::tcp

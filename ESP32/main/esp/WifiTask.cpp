@@ -2,6 +2,7 @@
 #include "WiFiCredentials.hpp"
 #include "driver/gpio.h"
 #include <iostream>
+#include <smooth/core/network/SocketDispatcher.h>
 #include <smooth/core/network/event/ConnectionStatusEvent.h>
 #include <smooth/core/task_priorities.h>
 
@@ -43,6 +44,9 @@ void WifiTask::event(const network::NetworkStatus& event) {
         default:
             break;
     }
+
+    // Trigger the socket dispatcher event:
+    smooth::core::network::SocketDispatcher::instance().event(event);
 }
 //---------------------------------------------------------------------------
 } // namespace espiot::esp

@@ -1,28 +1,26 @@
 #include "TcpConnection.hpp"
+#include <chrono>
 #include <iostream>
 #include <smooth/core/Task.h>
 
 //---------------------------------------------------------------------------
 namespace espiot::xmpp::tcp {
 //---------------------------------------------------------------------------
-TcpConnection::TcpConnection(const XmppAccount* account, smooth::core::Task& task) : account(account),
-                                                                                     task(task),
-                                                                                     buffer(nullptr),
-                                                                                     socket(nullptr) {}
+TcpConnection::TcpConnection(const XmppAccount* account, smooth::core::Task& task, ConnectionEventListener& connectionStatusChanged) : account(account),
+                                                                                                                                       task(task),
+                                                                                                                                       connectionStatusChanged(connectionStatusChanged),
+                                                                                                                                       buffer(nullptr),
+                                                                                                                                       socket(nullptr) {}
 
 void TcpConnection::connect() {
     if (!socket) {
         std::unique_ptr<XmppProtocol> protocol = std::make_unique<XmppProtocol>();
         buffer = std::make_shared<smooth::core::network::BufferContainer<XmppProtocol>>(task, *this, *this, *this, std::move(protocol));
 
-        socket = smooth::core::network::Socket<XmppProtocol>::create(buffer);
-        socket->start(account->server);
-
-        std::string msg = "<stream:stream from=’test1@xmpp.uwpx.org’ to=’xmpp.uwpx.org’ version=’1.0’ xml:lang=’en’ xmlns=’jabber:client’ xmlns:stream=’http://etherx.jabber.org/streams’>";
-        if (send(msg)) {
-            std::cout << "Send was successfull!" << std::endl;
-        } else {
-            std::cout << "Send was unsuccessfull!" << std::endl;
+        socket = smooth::core::network::Socket<XmppProtocol>::create(buffer, static_cast<std::chrono::milliseconds>(5000), static_cast<std::chrono::milliseconds>(5000));
+        bool result = socket->start(account->server);
+        if (!result) {
+            std::cerr << "Socket start failed!" << std::endl;
         }
     }
 }
@@ -45,8 +43,13 @@ void TcpConnection::event(const smooth::core::network::event::DataAvailableEvent
     std::cout << "EVENT DataAvailableEvent" << std::endl;
 }
 
-void TcpConnection::event(const smooth::core::network::event::ConnectionStatusEvent&) {
-    std::cout << "EVENT ConnectionStatusEvent" << std::endl;
+void TcpConnection::event(const smooth::core::network::event::ConnectionStatusEvent& event) {
+    connectionStatusChanged.event(event);
+    if (event.is_connected()) {
+        std::cout << "TcpConnection connected\n";
+    } else {
+        std::cout << "TcpConnection disconnected\n";
+    }
 }
 
 void TcpConnection::event(const smooth::core::network::NetworkStatus& event) {

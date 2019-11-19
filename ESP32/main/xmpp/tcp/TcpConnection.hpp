@@ -19,14 +19,17 @@ class TcpConnection : public smooth::core::ipc::IEventListener<smooth::core::net
                       public smooth::core::ipc::IEventListener<smooth::core::network::event::ConnectionStatusEvent>,
                       public smooth::core::ipc::IEventListener<smooth::core::network::NetworkStatus> {
     private:
+    using ConnectionEventListener = smooth::core::ipc::IEventListener<smooth::core::network::event::ConnectionStatusEvent>;
+
     const XmppAccount* account;
     smooth::core::Task& task;
+    ConnectionEventListener& connectionStatusChanged;
 
     std::shared_ptr<smooth::core::network::BufferContainer<XmppProtocol>> buffer;
     std::shared_ptr<smooth::core::network::Socket<XmppProtocol>> socket;
 
     public:
-    TcpConnection(const XmppAccount* account, smooth::core::Task& task);
+    TcpConnection(const XmppAccount* account, smooth::core::Task& task, ConnectionEventListener& connectionStatusChanged);
 
     void event(const smooth::core::network::event::TransmitBufferEmptyEvent&) override;
     void event(const smooth::core::network::event::DataAvailableEvent<XmppProtocol>&) override;

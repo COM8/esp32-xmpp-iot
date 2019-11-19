@@ -34,6 +34,10 @@ std::string XmppPacket::to_string() const {
 std::size_t XmppPacket::size() const {
     return data.size();
 }
+
+void XmppPacket::resize(std::size_t newSize) {
+    data.resize(newSize);
+}
 //---------------------------------------------------------------------------
 } // namespace espiot::xmpp::tcp
 //---------------------------------------------------------------------------
