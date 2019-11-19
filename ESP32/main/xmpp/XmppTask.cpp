@@ -17,7 +17,7 @@ XmppTask::XmppTask(esp::Storage& storage) : Task("XMPP Task", 4096, smooth::core
 
 void XmppTask::init() {
     std::string jidString = storage.readString(esp::Storage::JID);
-    xmpp::Jid jid = xmpp::Jid::fromBareJid(jidString);
+    xmpp::Jid jid = xmpp::Jid::fromFullJid(jidString);
     jid.print();
     std::string password = storage.readString(esp::Storage::JID_PASSWORD);
     xmpp::XmppAccount account(std::move(jid), std::move(password), std::make_shared<smooth::core::network::IPv4>(SERVER_IP, SERVER_PORT));

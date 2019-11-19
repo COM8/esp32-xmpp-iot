@@ -6,11 +6,12 @@
 //---------------------------------------------------------------------------
 namespace espiot::xmpp::tcp {
 //---------------------------------------------------------------------------
-TcpConnection::TcpConnection(const XmppAccount* account, smooth::core::Task& task, ConnectionEventListener& connectionStatusChanged) : account(account),
-                                                                                                                                       task(task),
-                                                                                                                                       connectionStatusChanged(connectionStatusChanged),
-                                                                                                                                       buffer(nullptr),
-                                                                                                                                       socket(nullptr) {}
+TcpConnection::TcpConnection(const XmppAccount* account, smooth::core::Task& task, ConnectionEventListener& connectionStatusChanged, XmppPacketAvailableListener& xmppPacketAvailable) : account(account),
+                                                                                                                                                                                         task(task),
+                                                                                                                                                                                         connectionStatusChanged(connectionStatusChanged),
+                                                                                                                                                                                         xmppPacketAvailable(xmppPacketAvailable),
+                                                                                                                                                                                         buffer(nullptr),
+                                                                                                                                                                                         socket(nullptr) {}
 
 void TcpConnection::connect() {
     if (!socket) {
@@ -26,6 +27,7 @@ void TcpConnection::connect() {
 }
 
 bool TcpConnection::send(std::string& msg) {
+    std::cout << "Send: " << msg << "\n";
     return socket->send(static_cast<XmppPacket>(msg));
 }
 
@@ -35,12 +37,12 @@ bool TcpConnection::send(std::wstring& msg) {
 
 void TcpConnection::disconnect() {}
 
-void TcpConnection::event(const smooth::core::network::event::TransmitBufferEmptyEvent&) {
-    std::cout << "EVENT TransmitBufferEmptyEvent" << std::endl;
-}
+void TcpConnection::event(const smooth::core::network::event::TransmitBufferEmptyEvent&) {}
 
-void TcpConnection::event(const smooth::core::network::event::DataAvailableEvent<XmppProtocol>&) {
-    std::cout << "EVENT DataAvailableEvent" << std::endl;
+void TcpConnection::event(const smooth::core::network::event::DataAvailableEvent<XmppProtocol>& event) {
+    XmppPacket packet;
+    event.get(packet);
+    xmppPacketAvailable.event(packet);
 }
 
 void TcpConnection::event(const smooth::core::network::event::ConnectionStatusEvent& event) {

@@ -2,6 +2,7 @@
 
 #include "XmppAccount.hpp"
 #include "tcp/TcpConnection.hpp"
+#include "tcp/XmppPacket.hpp"
 #include <smooth/core/Task.h>
 #include <smooth/core/ipc/IEventListener.h>
 #include <smooth/core/network/event/ConnectionStatusEvent.h>
@@ -10,7 +11,8 @@
 //---------------------------------------------------------------------------
 namespace espiot::xmpp {
 //---------------------------------------------------------------------------
-class XmppConnection : public smooth::core::ipc::IEventListener<smooth::core::network::event::ConnectionStatusEvent> {
+class XmppConnection : public smooth::core::ipc::IEventListener<smooth::core::network::event::ConnectionStatusEvent>,
+                       public smooth::core::ipc::IEventListener<tcp::XmppPacket> {
     private:
     const XmppAccount* account;
     tcp::TcpConnection tcpConnection;
@@ -23,6 +25,7 @@ class XmppConnection : public smooth::core::ipc::IEventListener<smooth::core::ne
     void disconnect();
 
     void event(const smooth::core::network::event::ConnectionStatusEvent& event);
+    void event(const tcp::XmppPacket& event);
 
     private:
     std::string genInitialStreamHeader();
