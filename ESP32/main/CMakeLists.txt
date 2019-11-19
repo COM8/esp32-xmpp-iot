@@ -31,3 +31,25 @@ set(SOURCES EspIoT.cpp
 idf_component_register(SRCS ${SOURCES}
                        INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR} $ENV{IDF_PATH}/components
                        REQUIRES smooth_component bt cpp_utils)
+
+
+# -----------------------Tiny-XML-2-----------------------
+# Build static library, do not build test executables
+option(BUILD_SHARED_LIBS OFF)
+option(BUILD_TESTING OFF)
+
+# Unfortunately the library performs install and export. Would 
+# have been nice if devs made that an option like BUILD_SHARED_LIBS
+# and BUILD_TESTING. Override install() and export() to do nothing
+# instead.
+function(install)
+endfunction()
+
+function(export)
+endfunction()
+
+# Import tinyxml2 targets 
+add_subdirectory(xmpp/tinyxml2)
+
+# Link tinyxml2 to main component
+target_link_libraries(${COMPONENT_LIB} PUBLIC tinyxml2)
