@@ -24,25 +24,26 @@ struct Jid {
         return getBare() + "/" + resourcePart;
     }
 
-    static void splitBareJid(const std::string& bareJid, std::string& userPart, std::string& domainPart) {
-        std::stringstream in(bareJid);
-        std::getline(in, userPart, '@');
-        domainPart = std::string(std::istreambuf_iterator<char>(in), {});
+    static void splitBareJid(const std::string& bareJid, std::string* userPart, std::string* domainPart) {
+        std::size_t pos = bareJid.find('@');
+        *userPart = bareJid.substr(0, pos);
+        *domainPart = bareJid.substr(pos + 1, bareJid.length() - pos);
     }
 
-    static void splitFullJid(const std::string& fullJid, std::string& userPart, std::string& domainPart, std::string& resourcePart) {
-        splitBareJid(fullJid, userPart, domainPart);
+    static void splitFullJid(const std::string& fullJid, std::string* userPart, std::string* domainPart, std::string* resourcePart) {
+        std::string tmp = "";
+        splitBareJid(fullJid, userPart, &tmp);
 
-        std::stringstream in(domainPart);
-        std::getline(in, domainPart, '/');
-        resourcePart = std::string(std::istreambuf_iterator<char>(in), {});
+        std::size_t pos = tmp.find('/');
+        *domainPart = tmp.substr(0, pos);
+        *resourcePart = tmp.substr(pos + 1, tmp.length() - pos);
     }
 
     static Jid&& fromBareJid(const std::string& bareJid) {
         std::string userPart;
         std::string domainPart;
         std::string resourcePart = "";
-        splitBareJid(bareJid, userPart, domainPart);
+        splitBareJid(bareJid, &userPart, &domainPart);
 
         return std::move(Jid(std::move(userPart), std::move(domainPart), std::move(resourcePart)));
     }
@@ -51,7 +52,7 @@ struct Jid {
         std::string userPart;
         std::string domainPart;
         std::string resourcePart;
-        splitFullJid(fullJid, userPart, domainPart, resourcePart);
+        splitFullJid(fullJid, &userPart, &domainPart, &resourcePart);
 
         return std::move(Jid(std::move(userPart), std::move(domainPart), std::move(resourcePart)));
     }
