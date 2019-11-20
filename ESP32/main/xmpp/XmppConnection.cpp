@@ -26,7 +26,8 @@ std::string XmppConnection::genInitialStreamHeader() {
 }
 
 std::string XmppConnection::genPlainAuthMessage() {
-    std::string passwordBase64 = crypto::toBase64("\0" + account->jid.userPart + "\0" + account->password);
+    std::string nulStr("\0", 1);
+    std::string passwordBase64 = crypto::toBase64(nulStr + account->jid.userPart + nulStr + account->password);
     return "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>" + passwordBase64 + "</auth>";
 }
 
