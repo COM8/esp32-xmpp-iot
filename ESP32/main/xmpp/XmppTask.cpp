@@ -1,4 +1,5 @@
 #include "XmppTask.hpp"
+#include "../esp/Storage.hpp"
 #include "xmpp/Jid.hpp"
 #include "xmpp/XmppAccount.hpp"
 #include "xmpp/XmppCredentials.hpp"
@@ -21,7 +22,7 @@ void XmppTask::init() {
     jid.print();
     std::string password = storage.readString(esp::Storage::JID_PASSWORD);
     xmpp::XmppAccount account(std::move(jid), std::move(password), std::make_shared<smooth::core::network::IPv4>(SERVER_IP, SERVER_PORT));
-    client = std::make_unique<xmpp::XmppClient>(std::move(account), *this);
+    client = std::make_unique<xmpp::XmppClient>(std::move(account), *this, *this, *this);
 }
 
 void XmppTask::event(const network::NetworkStatus& event) {
@@ -41,6 +42,14 @@ void XmppTask::event(const network::NetworkStatus& event) {
         default:
             break;
     }
+}
+
+void XmppTask::event(const XmppClientConnectionState& event) {
+    if (!storage.readBool(esp::Storage::SETUP_DONE)) {
+    }
+}
+
+void XmppTask::event(const tcp::XmppPacket& event) {
 }
 //---------------------------------------------------------------------------
 } // namespace espiot::xmpp

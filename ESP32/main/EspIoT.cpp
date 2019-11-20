@@ -33,6 +33,7 @@ void EspIoT::initWithDummyValues() {
     storage.writeString(esp::Storage::WIFI_SSID, esp::SSID);
     storage.writeString(esp::Storage::WIFI_PASSWORD, esp::PASSWORD);
     storage.writeBool(esp::Storage::INITIALIZED, true);
+    storage.writeBool(esp::Storage::SETUP_DONE, true);
     std::cout << "INITIALIZED WITH DUMMY VALUES!" << std::endl;
 }
 
@@ -43,7 +44,7 @@ void EspIoT::init() {
     storage.init();
     rgbLed.turnOnOnly(rgbLed.r);
 
-    initWithDummyValues();
+    // initWithDummyValues();
 
     // Check if reset button is pressen:
     if (resetButton.isPressed()) {

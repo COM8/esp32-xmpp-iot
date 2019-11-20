@@ -25,35 +25,40 @@ enum XmppConnectionState {
 
 class XmppConnection : public smooth::core::ipc::IEventListener<smooth::core::network::event::ConnectionStatusEvent>,
                        public smooth::core::ipc::IEventListener<tcp::XmppPacket> {
-    private:
+    public:
     const XmppAccount* account;
+
+    private:
     tcp::TcpConnection tcpConnection;
     smooth::core::Task& task;
 
     XmppConnectionState state;
-
-    using StateChangedListener = smooth::core::ipc::IEventListener<XmppConnectionState>;
-    StateChangedListener& stateChangedListener;
-
-    void
-    setState(XmppConnectionState state);
-    [[nodiscard]] XmppConnectionState getState() const;
+    void setState(XmppConnectionState state);
 
     public:
-    XmppConnection(const XmppAccount* account, smooth::core::Task& task, StateChangedListener& stateChangedListener);
+    using StateChangedListener = smooth::core::ipc::IEventListener<XmppConnectionState>;
+    StateChangedListener& stateChangedListener;
+    using XmppPacketAvailableListener = smooth::core::ipc::IEventListener<tcp::XmppPacket>;
+    XmppPacketAvailableListener& xmppPacketAvailable;
+
+    XmppConnection(const XmppAccount* account, smooth::core::Task& task, StateChangedListener& stateChangedListener, XmppPacketAvailableListener& xmppPacketAvailable);
+
+    void send(std::string& msg);
+    void send(std::wstring& msg);
+
+    [[nodiscard]] XmppConnectionState getState() const;
 
     void connect();
     void disconnect();
 
-    void event(const smooth::core::network::event::ConnectionStatusEvent& event);
-    void event(const tcp::XmppPacket& event);
+    void event(const smooth::core::network::event::ConnectionStatusEvent& event) override;
+    void event(const tcp::XmppPacket& event) override;
 
     private:
     std::string genInitialStreamHeader();
     std::string genPlainAuthMessage();
     std::string genResourceBindMessage();
     std::string genPresenceMessage();
-    std::string genMessageMessage(std::string& to, std::string& body);
 
     void onInitialStreamHeaderReply(const tcp::XmppPacket& packet);
     void onSaslAuthMessageReply(const tcp::XmppPacket& packet);

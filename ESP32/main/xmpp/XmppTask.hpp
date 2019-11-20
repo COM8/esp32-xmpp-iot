@@ -13,7 +13,9 @@
 namespace espiot::xmpp {
 //---------------------------------------------------------------------------
 class XmppTask : public smooth::core::Task,
-                 public smooth::core::ipc::IEventListener<smooth::core::network::NetworkStatus> {
+                 public smooth::core::ipc::IEventListener<smooth::core::network::NetworkStatus>,
+                 public smooth::core::ipc::IEventListener<XmppClientConnectionState>,
+                 public smooth::core::ipc::IEventListener<tcp::XmppPacket> {
     private:
     using NetworkStatusQueue = smooth::core::ipc::SubscribingTaskEventQueue<smooth::core::network::NetworkStatus>;
     std::shared_ptr<NetworkStatusQueue> net_status;
@@ -29,6 +31,8 @@ class XmppTask : public smooth::core::Task,
     void init() override;
 
     void event(const smooth::core::network::NetworkStatus& event) override;
+    void event(const XmppClientConnectionState& event) override;
+    void event(const tcp::XmppPacket& event) override;
 };
 //---------------------------------------------------------------------------
 } // namespace espiot::xmpp

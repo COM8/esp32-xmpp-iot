@@ -8,6 +8,7 @@ namespace espiot::esp {
 //---------------------------------------------------------------------------
 class Storage {
     public:
+    static const std::string SETUP_DONE;
     static const std::string INITIALIZED;
     static const std::string WIFI_SSID;
     static const std::string WIFI_PASSWORD;

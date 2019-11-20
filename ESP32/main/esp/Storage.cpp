@@ -8,6 +8,7 @@
 namespace espiot::esp {
 //---------------------------------------------------------------------------
 // Keys have a maximum length of 15 characters
+const std::string Storage::SETUP_DONE = "setup_done";
 const std::string Storage::INITIALIZED = "initialized";
 const std::string Storage::WIFI_SSID = "wifi_ssid";
 const std::string Storage::WIFI_PASSWORD = "wifi_pass";
