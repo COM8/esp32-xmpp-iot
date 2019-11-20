@@ -3,11 +3,12 @@
 #include "XmppAccount.hpp"
 #include "XmppConnection.hpp"
 #include <smooth/core/Task.h>
+#include <smooth/core/ipc/IEventListener.h>
 
 //---------------------------------------------------------------------------
 namespace espiot::xmpp {
 //---------------------------------------------------------------------------
-class XmppClient {
+class XmppClient : public smooth::core::ipc::IEventListener<XmppConnectionState> {
     public:
     const XmppAccount account;
     XmppConnection connection;
@@ -17,6 +18,8 @@ class XmppClient {
 
     void connect();
     void disconnect();
+
+    void event(const XmppConnectionState& event);
 };
 //---------------------------------------------------------------------------
 } // namespace espiot::xmpp

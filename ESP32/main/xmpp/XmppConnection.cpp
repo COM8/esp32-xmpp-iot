@@ -1,14 +1,16 @@
 #include "XmppConnection.hpp"
+#include "XmppUtils.hpp"
 #include "crypto/CryptoUtils.hpp"
 #include <iostream>
 
 //---------------------------------------------------------------------------
 namespace espiot::xmpp {
 //---------------------------------------------------------------------------
-XmppConnection::XmppConnection(const XmppAccount* account, smooth::core::Task& task) : account(account),
-                                                                                       tcpConnection(account, task, *this, *this),
-                                                                                       task(task),
-                                                                                       state(DISCONNECTED) {}
+XmppConnection::XmppConnection(const XmppAccount* account, smooth::core::Task& task, StateChangedListener& stateChangedListener) : account(account),
+                                                                                                                                   tcpConnection(account, task, *this, *this),
+                                                                                                                                   task(task),
+                                                                                                                                   state(DISCONNECTED),
+                                                                                                                                   stateChangedListener(stateChangedListener) {}
 
 void XmppConnection::connect() {
     if (state == DISCONNECTED) {
@@ -31,10 +33,22 @@ std::string XmppConnection::genPlainAuthMessage() {
     return "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>" + passwordBase64 + "</auth>";
 }
 
+std::string XmppConnection::genResourceBindMessage() {
+    return "<iq id='yhc13a95' type='set'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><resource>" + account->jid.resourcePart + "</resource></bind></iq>";
+}
+
+std::string XmppConnection::genPresenceMessage() {
+    return "<presence/>";
+}
+
+std::string XmppConnection::genMessageMessage(std::string& to, std::string& body) {
+    return "<message from='" + account->jid.getFull() + "' id='" + randFakeUuid() + "' to='" + to + "' type='chat' xml:lang='en'><body>" + body + "</body></message>";
+}
+
 void XmppConnection::setState(XmppConnectionState state) {
     if (state != this->state) {
         this->state = state;
-        // TODO: trigger some kind of event
+        stateChangedListener.event(state);
     }
 }
 
@@ -48,6 +62,31 @@ void XmppConnection::onInitialStreamHeaderReply(const tcp::XmppPacket& packet) {
         std::string msg = genPlainAuthMessage();
         setState(SASL_PLAIN_AUTH_SEND);
         tcpConnection.send(msg);
+    }
+}
+
+void XmppConnection::onSaslAuthMessageReply(const tcp::XmppPacket& packet) {
+    std::string s = packet.to_string();
+    if (s.find("success") != std::string::npos) {
+        std::string msg = genInitialStreamHeader();
+        setState(SASL_SOFT_STREAM_RESET_SEND);
+        tcpConnection.send(msg);
+    }
+}
+
+void XmppConnection::onSaslAuthRestartStreamHeaderReply(const tcp::XmppPacket& packet) {
+    std::string s = packet.to_string();
+    if (s.find("urn:ietf:params:xml:ns:xmpp-bind") != std::string::npos) {
+        std::string msg = genResourceBindMessage();
+        setState(RESOURCE_BINDING_REQUEST_SEND);
+        tcpConnection.send(msg);
+    }
+}
+
+void XmppConnection::onResourceBindingReply(const tcp::XmppPacket& packet) {
+    std::string s = packet.to_string();
+    if (s.find(account->jid.getFull()) != std::string::npos) {
+        setState(CONNECTED);
     }
 }
 
@@ -66,6 +105,18 @@ void XmppConnection::event(const tcp::XmppPacket& event) {
     switch (state) {
         case INITIAL_STREAM_HEADER_SEND:
             onInitialStreamHeaderReply(event);
+            break;
+
+        case SASL_PLAIN_AUTH_SEND:
+            onSaslAuthMessageReply(event);
+            break;
+
+        case SASL_SOFT_STREAM_RESET_SEND:
+            onSaslAuthRestartStreamHeaderReply(event);
+            break;
+
+        case RESOURCE_BINDING_REQUEST_SEND:
+            onResourceBindingReply(event);
             break;
 
         default:

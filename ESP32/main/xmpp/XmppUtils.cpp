@@ -1,4 +1,5 @@
 #include "XmppUtils.hpp"
+#include "esp_system.h"
 #include <codecvt>
 #include <locale>
 
@@ -30,6 +31,30 @@ std::vector<uint8_t> wstring_convert_to_bytes(const wchar_t* str) {
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
     std::string string = converter.to_bytes(str);
     return std::vector<uint8_t>(string.begin(), string.end());
+}
+
+std::string randUuid() {
+    return randHexString(8) + '-' + randHexString(4) + '-' + randHexString(4) + '-' + randHexString(4) + '-' + randHexString(12);
+}
+
+std::string randFakeUuid() {
+    return std::to_string(esp_random()) + "-" + std::to_string(esp_random()) + "-" + std::to_string(esp_random()) + "-" + std::to_string(esp_random()) + "-" + std::to_string(esp_random());
+}
+
+std::string randHexString(std::size_t len) {
+    size_t bytes = len / 2;
+    uint8_t* buff = static_cast<uint8_t*>(malloc(bytes));
+    esp_fill_random(buff, bytes);
+    char* outBuff = static_cast<char*>(malloc(sizeof(char) * (len + 1)));
+    for (size_t i = 0; i < bytes; i++) {
+        sprintf(outBuff + i, "%02X", buff[i]);
+    }
+    outBuff[len] = '\0';
+    std::string result(outBuff, len);
+    if (len % 2 != 0) {
+        result.substr(1, result.length() - 1);
+    }
+    return result;
 }
 //---------------------------------------------------------------------------
 } // namespace espiot::xmpp

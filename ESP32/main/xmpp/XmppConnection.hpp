@@ -16,6 +16,8 @@ enum XmppConnectionState {
     CONNECTING,
     INITIAL_STREAM_HEADER_SEND,
     SASL_PLAIN_AUTH_SEND,
+    SASL_SOFT_STREAM_RESET_SEND,
+    RESOURCE_BINDING_REQUEST_SEND,
     CONNECTED,
     DISCONNECTING,
     ERROR
@@ -30,11 +32,15 @@ class XmppConnection : public smooth::core::ipc::IEventListener<smooth::core::ne
 
     XmppConnectionState state;
 
-    void setState(XmppConnectionState state);
+    using StateChangedListener = smooth::core::ipc::IEventListener<XmppConnectionState>;
+    StateChangedListener& stateChangedListener;
+
+    void
+    setState(XmppConnectionState state);
     [[nodiscard]] XmppConnectionState getState() const;
 
     public:
-    XmppConnection(const XmppAccount* account, smooth::core::Task& task);
+    XmppConnection(const XmppAccount* account, smooth::core::Task& task, StateChangedListener& stateChangedListener);
 
     void connect();
     void disconnect();
@@ -45,8 +51,14 @@ class XmppConnection : public smooth::core::ipc::IEventListener<smooth::core::ne
     private:
     std::string genInitialStreamHeader();
     std::string genPlainAuthMessage();
+    std::string genResourceBindMessage();
+    std::string genPresenceMessage();
+    std::string genMessageMessage(std::string& to, std::string& body);
 
     void onInitialStreamHeaderReply(const tcp::XmppPacket& packet);
+    void onSaslAuthMessageReply(const tcp::XmppPacket& packet);
+    void onSaslAuthRestartStreamHeaderReply(const tcp::XmppPacket& packet);
+    void onResourceBindingReply(const tcp::XmppPacket& packet);
 };
 //---------------------------------------------------------------------------
 } // namespace espiot::xmpp
