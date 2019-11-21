@@ -13,7 +13,7 @@ namespace espiot::xmpp {
 //---------------------------------------------------------------------------
 using namespace smooth::core;
 //---------------------------------------------------------------------------
-const std::string INITIAL_HELLO_MESSAGE = "Hi from the ESP32. Please mirror this message!";
+const std::string XmppTask::INITIAL_HELLO_MESSAGE = "Hi from the ESP32. Please mirror this message!";
 
 XmppTask::XmppTask(esp::Storage& storage) : Task("XMPP Task", 4096, smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(1), 1),
                                             net_status(NetworkStatusQueue::create(2, *this, *this)),

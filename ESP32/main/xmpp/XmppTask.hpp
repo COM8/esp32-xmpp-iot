@@ -27,7 +27,7 @@ class XmppTask : public smooth::core::Task,
 
     esp::Storage& storage;
 
-    const std::string INITIAL_HELLO_MESSAGE;
+    static const std::string INITIAL_HELLO_MESSAGE;
 
     public:
     XmppTask(esp::Storage& storage);
