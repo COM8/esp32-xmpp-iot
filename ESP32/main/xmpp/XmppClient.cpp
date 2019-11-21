@@ -46,7 +46,7 @@ void XmppClient::send(std::wstring& msg) {
     connection.send(msg);
 }
 
-void XmppClient::sendMessage(std::string& to, std::string& body) {
+void XmppClient::sendMessage(const std::string& to, const std::string& body) {
     std::string msg = "<message from='" + account.jid.getFull() + "' id='" + randFakeUuid() + "' to='" + to + "' type='chat' xml:lang='en'><body>" + body + "</body></message>";
     send(msg);
 }

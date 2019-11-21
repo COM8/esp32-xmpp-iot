@@ -34,7 +34,7 @@ class XmppClient : public smooth::core::ipc::IEventListener<XmppConnectionState>
 
     void send(std::string& msg);
     void send(std::wstring& msg);
-    void sendMessage(std::string& to, std::string& body);
+    void sendMessage(const std::string& to, const std::string& body);
 
     using ConnectionStatusEventListener = smooth::core::ipc::IEventListener<XmppClientConnectionState>;
     ConnectionStatusEventListener& connectionStatusChanged;
