@@ -4,12 +4,12 @@
 //---------------------------------------------------------------------------
 namespace espiot::xmpp {
 //---------------------------------------------------------------------------
-XmppConnection::XmppConnection(const XmppAccount* account, smooth::core::Task& task, StateChangedListener& stateChangedListener, XmppPacketAvailableListener& xmppPacketAvailable) : account(account),
-                                                                                                                                                                                     tcpConnection(account, task, *this, *this),
-                                                                                                                                                                                     task(task),
-                                                                                                                                                                                     state(DISCONNECTED),
-                                                                                                                                                                                     stateChangedListener(stateChangedListener),
-                                                                                                                                                                                     xmppPacketAvailable(xmppPacketAvailable) {}
+XmppConnection::XmppConnection(const XmppAccount* account, smooth::core::Task& task, StateChangedListener& stateChangedListener, MessageListener& messageListener) : account(account),
+                                                                                                                                                                     tcpConnection(account, task, *this, *this),
+                                                                                                                                                                     task(task),
+                                                                                                                                                                     state(DISCONNECTED),
+                                                                                                                                                                     stateChangedListener(stateChangedListener),
+                                                                                                                                                                     messageListener(messageListener) {}
 
 void XmppConnection::connect() {
     if (state == DISCONNECTED) {
@@ -89,6 +89,8 @@ void XmppConnection::onSaslAuthRestartStreamHeaderReply(const tcp::XmppPacket& p
 void XmppConnection::onResourceBindingReply(const tcp::XmppPacket& packet) {
     std::string s = packet.to_string();
     if (s.find(account->jid.getFull()) != std::string::npos) {
+        std::string msg = genPresenceMessage();
+        tcpConnection.send(msg);
         setState(CONNECTED);
     }
 }
@@ -125,7 +127,9 @@ void XmppConnection::event(const tcp::XmppPacket& event) {
         default:
             break;
     }
-    xmppPacketAvailable.event(event);
+
+    messages::Message msg(event.get_data_vec());
+    messageListener.event(msg);
 }
 //---------------------------------------------------------------------------
 } // namespace espiot::xmpp

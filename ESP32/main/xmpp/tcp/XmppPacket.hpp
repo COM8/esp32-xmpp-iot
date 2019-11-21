@@ -35,6 +35,7 @@ class XmppPacket : public smooth::core::network::IPacketDisassembly {
      **/
     const uint8_t* get_data() override;
     std::vector<uint8_t>& get_data_vec();
+    [[nodiscard]] const std::vector<uint8_t>& get_data_vec() const;
     [[nodiscard]] std::wstring to_wstring() const;
     [[nodiscard]] std::string to_string() const;
     [[nodiscard]] std::size_t size() const;

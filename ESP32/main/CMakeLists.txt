@@ -29,6 +29,7 @@ set(SOURCES EspIoT.cpp
             xmpp/tcp/XmppPacket.cpp
             
             xmpp/messages/MessageParser.cpp
+            xmpp/messages/Message.cpp
             
             xmpp/crypto/CryptoUtils.cpp)
 

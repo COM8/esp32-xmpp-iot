@@ -23,6 +23,10 @@ std::vector<uint8_t>& XmppPacket::get_data_vec() {
     return data;
 }
 
+const std::vector<uint8_t>& XmppPacket::get_data_vec() const {
+    return data;
+}
+
 std::wstring XmppPacket::to_wstring() const {
     return wstring_convert_from_bytes(data);
 }

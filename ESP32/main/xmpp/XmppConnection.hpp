@@ -1,6 +1,8 @@
 #pragma once
 
+#include "INonConstEventListener.hpp"
 #include "XmppAccount.hpp"
+#include "messages/Message.hpp"
 #include "tcp/TcpConnection.hpp"
 #include "tcp/XmppPacket.hpp"
 #include <smooth/core/Task.h>
@@ -38,10 +40,10 @@ class XmppConnection : public smooth::core::ipc::IEventListener<smooth::core::ne
     public:
     using StateChangedListener = smooth::core::ipc::IEventListener<XmppConnectionState>;
     StateChangedListener& stateChangedListener;
-    using XmppPacketAvailableListener = smooth::core::ipc::IEventListener<tcp::XmppPacket>;
-    XmppPacketAvailableListener& xmppPacketAvailable;
+    using MessageListener = INonConstEventListener<messages::Message>;
+    MessageListener& messageListener;
 
-    XmppConnection(const XmppAccount* account, smooth::core::Task& task, StateChangedListener& stateChangedListener, XmppPacketAvailableListener& xmppPacketAvailable);
+    XmppConnection(const XmppAccount* account, smooth::core::Task& task, StateChangedListener& stateChangedListener, MessageListener& messageListener);
 
     void send(std::string& msg);
     void send(std::wstring& msg);

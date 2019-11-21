@@ -1,8 +1,9 @@
 #pragma once
 
+#include "INonConstEventListener.hpp"
 #include "XmppAccount.hpp"
 #include "XmppConnection.hpp"
-#include "tcp/XmppPacket.hpp"
+#include "messages/Message.hpp"
 #include <string>
 #include <smooth/core/Task.h>
 #include <smooth/core/ipc/IEventListener.h>
@@ -19,7 +20,7 @@ enum XmppClientConnectionState {
 };
 
 class XmppClient : public smooth::core::ipc::IEventListener<XmppConnectionState>,
-                   public smooth::core::ipc::IEventListener<tcp::XmppPacket> {
+                   public INonConstEventListener<messages::Message> {
     private:
     XmppClientConnectionState state;
 
@@ -37,10 +38,10 @@ class XmppClient : public smooth::core::ipc::IEventListener<XmppConnectionState>
 
     using ConnectionStatusEventListener = smooth::core::ipc::IEventListener<XmppClientConnectionState>;
     ConnectionStatusEventListener& connectionStatusChanged;
-    using XmppPacketAvailableListener = smooth::core::ipc::IEventListener<tcp::XmppPacket>;
-    XmppPacketAvailableListener& xmppPacketAvailable;
+    using MessageListener = INonConstEventListener<messages::Message>;
+    MessageListener& messageListener;
 
-    XmppClient(const XmppAccount&& account, smooth::core::Task& task, ConnectionStatusEventListener& connectionStatusChanged, XmppPacketAvailableListener& xmppPacketAvailable);
+    XmppClient(const XmppAccount&& account, smooth::core::Task& task, ConnectionStatusEventListener& connectionStatusChanged, MessageListener& messageListener);
 
     void connect();
     void disconnect();
@@ -48,7 +49,7 @@ class XmppClient : public smooth::core::ipc::IEventListener<XmppConnectionState>
     bool isConnected();
 
     void event(const XmppConnectionState& event) override;
-    void event(const tcp::XmppPacket& event) override;
+    void event(messages::Message& event) override;
 };
 //---------------------------------------------------------------------------
 } // namespace espiot::xmpp

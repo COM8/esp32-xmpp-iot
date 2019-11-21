@@ -50,6 +50,7 @@ void EspIoT::init() {
     if (resetButton.isPressed()) {
         std::cout << "Reset button pressed. Discarding initialization.\n";
         storage.writeBool(esp::Storage::INITIALIZED, false);
+        storage.writeBool(esp::Storage::SETUP_DONE, false);
     }
 
     if (storage.readBool(esp::Storage::INITIALIZED)) {

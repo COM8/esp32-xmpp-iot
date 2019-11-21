@@ -3,14 +3,18 @@
 #include "xmpp/Jid.hpp"
 #include "xmpp/XmppAccount.hpp"
 #include "xmpp/XmppCredentials.hpp"
+#include <iostream>
 #include <smooth/core/network/event/ConnectionStatusEvent.h>
 #include <smooth/core/task_priorities.h>
+#include <tinyxml2.h>
 
 //---------------------------------------------------------------------------
 namespace espiot::xmpp {
 //---------------------------------------------------------------------------
 using namespace smooth::core;
 //---------------------------------------------------------------------------
+const std::string INITIAL_HELLO_MESSAGE = "Hi from the ESP32. Please mirror this message!";
+
 XmppTask::XmppTask(esp::Storage& storage) : Task("XMPP Task", 4096, smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(1), 1),
                                             net_status(NetworkStatusQueue::create(2, *this, *this)),
                                             client(nullptr),
@@ -45,11 +49,29 @@ void XmppTask::event(const network::NetworkStatus& event) {
 }
 
 void XmppTask::event(const XmppClientConnectionState& event) {
-    if (!storage.readBool(esp::Storage::SETUP_DONE)) {
+    if (event == CLIENT_CONNECTED) {
+        if (!storage.readBool(esp::Storage::SETUP_DONE)) {
+            std::string to = storage.readString(esp::Storage::JID_SENDER);
+            client->sendMessage(to, INITIAL_HELLO_MESSAGE);
+        }
     }
 }
 
-void XmppTask::event(const tcp::XmppPacket& event) {
+void XmppTask::event(messages::Message& event) {
+    const tinyxml2::XMLDocument& doc = event.toXmlDoc();
+    const tinyxml2::XMLElement* elem = doc.FirstChildElement("message");
+    if (elem) {
+        elem = elem->FirstChildElement("body");
+        if (elem) {
+            if (!strcmp(INITIAL_HELLO_MESSAGE.c_str(), elem->GetText())) {
+                std::string to = storage.readString(esp::Storage::JID_SENDER);
+                std::string body = "Setup done!";
+                client->sendMessage(to, body);
+                storage.writeBool(esp::Storage::SETUP_DONE, true);
+                std::cout << "Setup done!\n";
+            }
+        }
+    }
 }
 //---------------------------------------------------------------------------
 } // namespace espiot::xmpp
