@@ -18,7 +18,7 @@ void TcpConnection::connect() {
         std::unique_ptr<XmppProtocol> protocol = std::make_unique<XmppProtocol>();
         buffer = std::make_shared<smooth::core::network::BufferContainer<XmppProtocol>>(task, *this, *this, *this, std::move(protocol));
 
-        socket = smooth::core::network::Socket<XmppProtocol>::create(buffer, static_cast<std::chrono::milliseconds>(5000), static_cast<std::chrono::milliseconds>(5000));
+        socket = smooth::core::network::Socket<XmppProtocol>::create(buffer, static_cast<std::chrono::milliseconds>(5000), static_cast<std::chrono::milliseconds>(-1));
         bool result = socket->start(account->server);
         if (!result) {
             std::cerr << "Socket start failed!" << std::endl;
