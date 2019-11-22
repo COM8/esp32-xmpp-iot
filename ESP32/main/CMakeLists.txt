@@ -31,7 +31,9 @@ set(SOURCES EspIoT.cpp
             xmpp/messages/MessageParser.cpp
             xmpp/messages/Message.cpp
             
-            xmpp/crypto/CryptoUtils.cpp)
+            xmpp/crypto/CryptoUtils.cpp
+            
+            xmpp/helpers/PubSubHelper.cpp)
 
 idf_component_register(SRCS ${SOURCES}
                        INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR} $ENV{IDF_PATH}/components

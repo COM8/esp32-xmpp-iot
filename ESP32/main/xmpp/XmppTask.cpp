@@ -18,7 +18,14 @@ const std::string XmppTask::INITIAL_HELLO_MESSAGE = "Hi from the ESP32. Please m
 XmppTask::XmppTask(esp::Storage& storage) : Task("XMPP Task", 4096, smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(1), 1),
                                             net_status(NetworkStatusQueue::create(2, *this, *this)),
                                             client(nullptr),
-                                            storage(storage) {}
+                                            storage(storage),
+                                            pubSubHelper(nullptr) {}
+
+XmppTask::~XmppTask() {
+    if (client) {
+        client->unsubscribeFromMessagesListener(this);
+    }
+}
 
 void XmppTask::init() {
     std::string jidString = storage.readString(esp::Storage::JID);
@@ -26,7 +33,11 @@ void XmppTask::init() {
     jid.print();
     std::string password = storage.readString(esp::Storage::JID_PASSWORD);
     xmpp::XmppAccount account(std::move(jid), std::move(password), std::make_shared<smooth::core::network::IPv4>(SERVER_IP, SERVER_PORT));
-    client = std::make_unique<xmpp::XmppClient>(std::move(account), *this, *this, *this);
+    client = std::make_unique<xmpp::XmppClient>(std::move(account), *this, *this);
+    client->subscribeToMessagesListener(this);
+
+    // Helpers:
+    pubSubHelper = std::make_unique<helpers::PubSubHelper>(client);
 }
 
 void XmppTask::event(const network::NetworkStatus& event) {
@@ -48,11 +59,17 @@ void XmppTask::event(const network::NetworkStatus& event) {
     }
 }
 
+void XmppTask::onReady() {
+    pubSubHelper->start();
+}
+
 void XmppTask::event(const XmppClientConnectionState& event) {
     if (event == CLIENT_CONNECTED) {
         if (!storage.readBool(esp::Storage::SETUP_DONE)) {
             std::string to = storage.readString(esp::Storage::JID_SENDER);
             client->sendMessage(to, INITIAL_HELLO_MESSAGE);
+        } else {
+            onReady();
         }
     }
 }
@@ -69,6 +86,7 @@ void XmppTask::event(messages::Message& event) {
                 client->sendMessage(to, body);
                 storage.writeBool(esp::Storage::SETUP_DONE, true);
                 std::cout << "Setup done!\n";
+                onReady();
             }
         }
     }

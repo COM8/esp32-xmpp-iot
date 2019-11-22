@@ -2,6 +2,7 @@
 
 #include "INonConstEventListener.hpp"
 #include "esp/Storage.hpp"
+#include "helpers/PubSubHelper.hpp"
 #include "messages/Message.hpp"
 #include "xmpp/XmppClient.hpp"
 #include <memory>
@@ -22,15 +23,18 @@ class XmppTask : public smooth::core::Task,
     using NetworkStatusQueue = smooth::core::ipc::SubscribingTaskEventQueue<smooth::core::network::NetworkStatus>;
     std::shared_ptr<NetworkStatusQueue> net_status;
 
-    using XmppClient_up = std::unique_ptr<xmpp::XmppClient>;
-    XmppClient_up client;
+    std::shared_ptr<xmpp::XmppClient> client;
 
     esp::Storage& storage;
+    std::unique_ptr<helpers::PubSubHelper> pubSubHelper;
 
     static const std::string INITIAL_HELLO_MESSAGE;
 
+    void onReady();
+
     public:
     XmppTask(esp::Storage& storage);
+    ~XmppTask();
 
     void init() override;
 

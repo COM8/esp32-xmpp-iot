@@ -5,6 +5,7 @@
 #include "XmppConnection.hpp"
 #include "messages/Message.hpp"
 #include <string>
+#include <vector>
 #include <smooth/core/Task.h>
 #include <smooth/core/ipc/IEventListener.h>
 #include <smooth/core/network/event/ConnectionStatusEvent.h>
@@ -39,14 +40,17 @@ class XmppClient : public smooth::core::ipc::IEventListener<XmppConnectionState>
     using ConnectionStatusEventListener = smooth::core::ipc::IEventListener<XmppClientConnectionState>;
     ConnectionStatusEventListener& connectionStatusChanged;
     using MessageListener = INonConstEventListener<messages::Message>;
-    MessageListener& messageListener;
+    std::vector<MessageListener*> messageListener;
 
-    XmppClient(const XmppAccount&& account, smooth::core::Task& task, ConnectionStatusEventListener& connectionStatusChanged, MessageListener& messageListener);
+    XmppClient(const XmppAccount&& account, smooth::core::Task& task, ConnectionStatusEventListener& connectionStatusChanged);
 
     void connect();
     void disconnect();
 
     bool isConnected();
+
+    void subscribeToMessagesListener(MessageListener* messageListener);
+    void unsubscribeFromMessagesListener(MessageListener* messageListener);
 
     void event(const XmppConnectionState& event) override;
     void event(messages::Message& event) override;
