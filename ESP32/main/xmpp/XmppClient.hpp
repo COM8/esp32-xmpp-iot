@@ -52,6 +52,11 @@ class XmppClient : public smooth::core::ipc::IEventListener<XmppConnectionState>
     void subscribeToMessagesListener(MessageListener* messageListener);
     void unsubscribeFromMessagesListener(MessageListener* messageListener);
 
+    void addToRoster(std::string& bareJid);
+    void requestPresenceSubscription(std::string& bareJid);
+    void approvePresenceSubscription(std::string& bareJid);
+    void refusePresenceSubscription(std::string& bareJid);
+
     void event(const XmppConnectionState& event) override;
     void event(messages::Message& event) override;
 };

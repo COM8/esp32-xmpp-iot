@@ -2,6 +2,7 @@
 
 #include "INonConstEventListener.hpp"
 #include "esp/Storage.hpp"
+#include "esp/sensors/Bmp180.hpp"
 #include "helpers/PubSubHelper.hpp"
 #include "messages/Message.hpp"
 #include "xmpp/XmppClient.hpp"
@@ -23,9 +24,10 @@ class XmppTask : public smooth::core::Task,
     using NetworkStatusQueue = smooth::core::ipc::SubscribingTaskEventQueue<smooth::core::network::NetworkStatus>;
     std::shared_ptr<NetworkStatusQueue> net_status;
 
-    std::shared_ptr<xmpp::XmppClient> client;
-
     esp::Storage& storage;
+    esp::sensors::Bmp180 bmp180;
+
+    std::shared_ptr<xmpp::XmppClient> client;
     std::unique_ptr<helpers::PubSubHelper> pubSubHelper;
 
     static const std::string INITIAL_HELLO_MESSAGE;
@@ -37,6 +39,9 @@ class XmppTask : public smooth::core::Task,
     ~XmppTask();
 
     void init() override;
+    void tick() override;
+    void handlePresenceMessages(const tinyxml2::XMLElement* elem);
+    void handleMessageMessages(const tinyxml2::XMLElement* elem);
 
     void event(const smooth::core::network::NetworkStatus& event) override;
     void event(const XmppClientConnectionState& event) override;

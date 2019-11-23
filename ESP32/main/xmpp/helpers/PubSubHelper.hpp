@@ -16,9 +16,6 @@ enum PubSubHelperState {
 
 class PubSubHelper : public INonConstEventListener<messages::Message> {
     private:
-    static const std::string XMPP_IOT_SENSOR_TEMP;
-    static const std::string XMPP_IOT_SENSOR_BAR;
-
     std::shared_ptr<xmpp::XmppClient> client;
     PubSubHelperState state;
 
@@ -33,6 +30,11 @@ class PubSubHelper : public INonConstEventListener<messages::Message> {
     std::string genCreateNodesMessage(const std::string& nodeName);
 
     public:
+    static const std::string XMPP_IOT_SENSOR_TEMP;
+    static const std::string XMPP_IOT_SENSOR_BAR;
+
+    // void publishNode(std::string& nodeName, std::string& val);
+
     PubSubHelper(std::shared_ptr<xmpp::XmppClient> client);
 
     PubSubHelperState getState();

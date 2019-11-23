@@ -27,6 +27,10 @@ void XmppClient::disconnect() {
     }
 }
 
+bool XmppClient::isConnected() {
+    return state == CLIENT_CONNECTED;
+}
+
 void XmppClient::setState(XmppClientConnectionState state) {
     if (state != this->state) {
         this->state = state;
@@ -63,6 +67,21 @@ void XmppClient::unsubscribeFromMessagesListener(MessageListener* messageListene
             return;
         }
     }
+}
+
+void XmppClient::addToRoster(std::string& bareJid) {
+    std::string msg = "<iq type='get' from='" + account.jid.getFull() + "' to='" + account.jid.domainPart + "' id='" + randFakeUuid() + "'><query xmlns='jabber:iq:roster'><item jid='" + bareJid + "' name='Nurse'></item></query></iq>";
+    send(msg);
+}
+
+void XmppClient::approvePresenceSubscription(std::string& bareJid) {
+    std::string msg = "<presence to='" + bareJid + "' type='subscribed'/>";
+    send(msg);
+}
+
+void XmppClient::refusePresenceSubscription(std::string& bareJid) {
+    std::string msg = "<presence to='" + bareJid + "' type='unsubscribed'/>";
+    send(msg);
 }
 
 void XmppClient::event(const XmppConnectionState& event) {

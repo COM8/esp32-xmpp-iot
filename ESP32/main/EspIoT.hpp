@@ -30,7 +30,6 @@ class EspIoT : public smooth::core::Application, public esp::bt::BluetoothServer
     esp::Button resetButton;
     esp::Storage storage;
     esp::WifiTask wifiTask;
-    esp::sensors::Bmp180 bmp180;
     esp::bt::BluetoothServer btServer;
     xmpp::XmppTask xmppTask;
 

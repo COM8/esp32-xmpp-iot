@@ -22,7 +22,6 @@ EspIoT::EspIoT() : Application(smooth::core::APPLICATION_BASE_PRIO, std::chrono:
                    resetButton(GPIO_NUM_4),
                    storage(),
                    wifiTask(get_wifi(), rgbLed),
-                   bmp180(GPIO_NUM_32, GPIO_NUM_33),
                    btServer(rgbLed, storage),
                    xmppTask(storage){};
 
@@ -65,16 +64,11 @@ void EspIoT::init() {
 }
 
 void EspIoT::tick() {
-    double tmp = bmp180.readTemp();
-    printf("Temp: %lf\n", tmp);
-
-    int32_t pressure = bmp180.readPressure();
-    printf("Pressure: %i\n", pressure);
-
     // Check if reset button is pressen:
     if (resetButton.isPressed()) {
         std::cout << "Reset button pressed. Discarding initialization.\n";
         storage.writeBool(esp::Storage::INITIALIZED, false);
+        storage.writeBool(esp::Storage::SETUP_DONE, false);
         // Restart
         esp_restart();
     }
