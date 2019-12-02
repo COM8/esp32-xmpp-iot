@@ -27,11 +27,18 @@ class PubSubHelper : public INonConstEventListener<messages::Message> {
     void onCreateNodeReply(messages::Message& event);
 
     std::string genDiscoverNodesMessage();
-    std::string genCreateNodesMessage(const std::string& nodeName);
+    std::string genPublishUiNodeMessage();
+    std::string genPublishSensorsNodeMessage(double temp, int32_t pressure);
+    std::string genPublishActuatorsNodeMessage();
 
     public:
     static const std::string XMPP_IOT_SENSOR_TEMP;
     static const std::string XMPP_IOT_SENSOR_BAR;
+    static const std::string XMPP_IOT_SENSORS;
+    static const std::string XMPP_IOT_ACTUATORS;
+    static const std::string XMPP_IOT_ACTUATOR_LED;
+    static const std::string XMPP_IOT_ACTUATOR_SPEAKER;
+    static const std::string XMPP_IOT_UI;
 
     // void publishNode(std::string& nodeName, std::string& val);
 

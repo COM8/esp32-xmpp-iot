@@ -9,6 +9,11 @@ namespace espiot::xmpp::helpers {
 //---------------------------------------------------------------------------
 const std::string PubSubHelper::XMPP_IOT_SENSOR_TEMP = "xmpp.iot.sensor.temp";
 const std::string PubSubHelper::XMPP_IOT_SENSOR_BAR = "xmpp.iot.sensor.bar";
+const std::string PubSubHelper::XMPP_IOT_SENSORS = "xmpp.iot.sensors";
+const std::string PubSubHelper::XMPP_IOT_ACTUATORS = "xmpp.iot.actuators";
+const std::string PubSubHelper::XMPP_IOT_ACTUATOR_LED = "xmpp.iot.actuator.led";
+const std::string PubSubHelper::XMPP_IOT_ACTUATOR_SPEAKER = "xmpp.iot.actuator.speaker";
+const std::string PubSubHelper::XMPP_IOT_UI = "xmpp.iot.ui";
 
 PubSubHelper::PubSubHelper(std::shared_ptr<xmpp::XmppClient> client) : client(client),
                                                                        state(PUB_SUB_HELPER_NOT_STARTED) {}
@@ -39,18 +44,166 @@ void PubSubHelper::createNodes() {
 }
 
 std::string PubSubHelper::genDiscoverNodesMessage() {
-    return "<iq type='get' from='" + client->account.jid.getFull() + "' to='pubsub." + client->account.jid.domainPart + "' id='" + randFakeUuid() + "'><query xmlns='http://jabber.org/protocol/disco#items'/></iq>";
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement* iqNode = doc.NewElement("iq");
+    iqNode->SetAttribute("type", "get");
+    iqNode->SetAttribute("to", ("pubsub." + client->account.jid.domainPart).c_str());
+    iqNode->SetAttribute("from", client->account.jid.getFull().c_str());
+    iqNode->SetAttribute("id", randFakeUuid().c_str());
+
+    tinyxml2::XMLElement* queryNode = doc.NewElement("query");
+    queryNode->SetAttribute("xmlns", "http://jabber.org/protocol/disco#items");
+    iqNode->InsertEndChild(queryNode);
+
+    tinyxml2::XMLPrinter printer;
+    iqNode->Accept(&printer);
+    return printer.CStr();
 }
 
-std::string PubSubHelper::genCreateNodesMessage(const std::string& nodeName) {
-    return "<iq type='set' from='" + client->account.jid.getFull() + "' id='" + randFakeUuid() + "'><pubsub xmlns='http://jabber.org/protocol/pubsub'><publish node='" + nodeName + "'><item id='current'><temp>25.44</temp></item></publish></pubsub></iq>";
+std::string PubSubHelper::genPublishUiNodeMessage() {
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement* iqNode = doc.NewElement("iq");
+    iqNode->SetAttribute("type", "set");
+    iqNode->SetAttribute("to", ("pubsub." + client->account.jid.domainPart).c_str());
+    iqNode->SetAttribute("from", client->account.jid.getFull().c_str());
+    iqNode->SetAttribute("id", randFakeUuid().c_str());
+
+    tinyxml2::XMLElement* pubsubNode = doc.NewElement("pubsub");
+    pubsubNode->SetAttribute("xmlns", "http://jabber.org/protocol/pubsub");
+    iqNode->InsertEndChild(pubsubNode);
+
+    tinyxml2::XMLElement* publishNode = doc.NewElement("publish");
+    publishNode->SetAttribute("node", XMPP_IOT_UI.c_str());
+    pubsubNode->InsertEndChild(publishNode);
+
+    tinyxml2::XMLElement* itemNode = doc.NewElement("item");
+    itemNode->SetAttribute("id", "current");
+    publishNode->InsertEndChild(itemNode);
+
+    tinyxml2::XMLElement* xNode = doc.NewElement("x");
+    xNode->SetAttribute("xmlns", "jabber:x:data");
+    xNode->SetAttribute("type", "form");
+    itemNode->InsertEndChild(xNode);
+
+    tinyxml2::XMLElement* titleNode = doc.NewElement("title");
+    titleNode->SetText("ESP32 XMPP");
+    xNode->InsertEndChild(titleNode);
+
+    tinyxml2::XMLElement* ledFieldNode = doc.NewElement("field");
+    ledFieldNode->SetAttribute("type", "boolean");
+    ledFieldNode->SetAttribute("label", "LED on?");
+    ledFieldNode->SetAttribute("var", XMPP_IOT_ACTUATOR_LED.c_str());
+    xNode->InsertEndChild(ledFieldNode);
+
+    tinyxml2::XMLElement* speakerFieldNode = doc.NewElement("field");
+    speakerFieldNode->SetAttribute("type", "boolean");
+    speakerFieldNode->SetAttribute("label", "Speaker on?");
+    speakerFieldNode->SetAttribute("var", XMPP_IOT_ACTUATOR_SPEAKER.c_str());
+    xNode->InsertEndChild(speakerFieldNode);
+
+    tinyxml2::XMLElement* tempFieldNode = doc.NewElement("field");
+    tempFieldNode->SetAttribute("type", "text-single");
+    tempFieldNode->SetAttribute("label", "Temperature: ");
+    tempFieldNode->SetAttribute("var", XMPP_IOT_SENSOR_TEMP.c_str());
+    xNode->InsertEndChild(tempFieldNode);
+    tempFieldNode->InsertEndChild(doc.NewElement("xdd:readOnly"));
+
+    tinyxml2::XMLElement* barFieldNode = doc.NewElement("field");
+    barFieldNode->SetAttribute("type", "text-single");
+    barFieldNode->SetAttribute("label", "Pressure: ");
+    barFieldNode->SetAttribute("var", XMPP_IOT_SENSOR_BAR.c_str());
+    xNode->InsertEndChild(barFieldNode);
+    barFieldNode->InsertEndChild(doc.NewElement("xdd:readOnly"));
+
+    tinyxml2::XMLPrinter printer;
+    iqNode->Accept(&printer);
+    return printer.CStr();
+}
+
+std::string PubSubHelper::genPublishSensorsNodeMessage(double temp, int32_t pressure) {
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement* iqNode = doc.NewElement("iq");
+    iqNode->SetAttribute("type", "set");
+    iqNode->SetAttribute("to", ("pubsub." + client->account.jid.domainPart).c_str());
+    iqNode->SetAttribute("from", client->account.jid.getFull().c_str());
+    iqNode->SetAttribute("id", randFakeUuid().c_str());
+
+    tinyxml2::XMLElement* pubsubNode = doc.NewElement("pubsub");
+    pubsubNode->SetAttribute("xmlns", "http://jabber.org/protocol/pubsub");
+    iqNode->InsertEndChild(pubsubNode);
+
+    tinyxml2::XMLElement* publishNode = doc.NewElement("publish");
+    publishNode->SetAttribute("node", XMPP_IOT_SENSORS.c_str());
+    pubsubNode->InsertEndChild(publishNode);
+
+    tinyxml2::XMLElement* tempItemNode = doc.NewElement("item");
+    tempItemNode->SetAttribute("id", XMPP_IOT_SENSOR_TEMP.c_str());
+    publishNode->InsertEndChild(tempItemNode);
+
+    tinyxml2::XMLElement* tempValNode = doc.NewElement("val");
+    tempValNode->SetAttribute("type", "double");
+    tempValNode->SetAttribute("unit", "celsius");
+    tempValNode->SetText(temp);
+    tempItemNode->InsertEndChild(tempValNode);
+
+    tinyxml2::XMLElement* barItemNode = doc.NewElement("item");
+    barItemNode->SetAttribute("id", XMPP_IOT_SENSOR_BAR.c_str());
+    publishNode->InsertEndChild(barItemNode);
+
+    tinyxml2::XMLElement* barValNode = doc.NewElement("val");
+    barValNode->SetAttribute("type", "uint");
+    barValNode->SetAttribute("unit", "bar");
+    barValNode->SetText(temp);
+    tempItemNode->InsertEndChild(barValNode);
+
+    tinyxml2::XMLPrinter printer;
+    iqNode->Accept(&printer);
+    return printer.CStr();
+}
+
+std::string PubSubHelper::genPublishActuatorsNodeMessage() {
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement* iqNode = doc.NewElement("iq");
+    iqNode->SetAttribute("type", "set");
+    iqNode->SetAttribute("to", ("pubsub." + client->account.jid.domainPart).c_str());
+    iqNode->SetAttribute("from", client->account.jid.getFull().c_str());
+    iqNode->SetAttribute("id", randFakeUuid().c_str());
+
+    tinyxml2::XMLElement* pubsubNode = doc.NewElement("pubsub");
+    pubsubNode->SetAttribute("xmlns", "http://jabber.org/protocol/pubsub");
+    iqNode->InsertEndChild(pubsubNode);
+
+    tinyxml2::XMLElement* publishNode = doc.NewElement("publish");
+    publishNode->SetAttribute("node", XMPP_IOT_ACTUATORS.c_str());
+    pubsubNode->InsertEndChild(publishNode);
+
+    tinyxml2::XMLElement* ledItemNode = doc.NewElement("item");
+    ledItemNode->SetAttribute("id", XMPP_IOT_ACTUATOR_LED.c_str());
+    publishNode->InsertEndChild(ledItemNode);
+
+    tinyxml2::XMLElement* ledValNode = doc.NewElement("val");
+    ledItemNode->SetAttribute("type", "boolean");
+    ledValNode->SetText(true);
+    ledItemNode->InsertEndChild(ledValNode);
+
+    tinyxml2::XMLElement* speakerItemNode = doc.NewElement("item");
+    speakerItemNode->SetAttribute("id", XMPP_IOT_ACTUATOR_SPEAKER.c_str());
+    publishNode->InsertEndChild(speakerItemNode);
+
+    tinyxml2::XMLElement* speakerValNode = doc.NewElement("val");
+    speakerValNode->SetAttribute("type", "boolean");
+    speakerValNode->SetText(true);
+    speakerItemNode->InsertEndChild(speakerValNode);
+
+    tinyxml2::XMLPrinter printer;
+    iqNode->Accept(&printer);
+    return printer.CStr();
 }
 
 void PubSubHelper::onDiscoverNodesReply(messages::Message& event) {
     const tinyxml2::XMLDocument& doc = event.toXmlDoc();
     const tinyxml2::XMLElement* elem = doc.FirstChildElement("iq");
     if (!elem) {
-        std::cout << "1111" << std::endl;
         return;
     }
     elem = elem->FirstChildElement("query");
@@ -65,13 +218,18 @@ void PubSubHelper::onDiscoverNodesReply(messages::Message& event) {
         }
     }
 
-    if (std::find(nodes.begin(), nodes.end(), XMPP_IOT_SENSOR_TEMP) == nodes.end()) {
-        std::string msg = genCreateNodesMessage(XMPP_IOT_SENSOR_TEMP);
+    if (std::find(nodes.begin(), nodes.end(), XMPP_IOT_UI) == nodes.end()) {
+        std::string msg = genPublishUiNodeMessage();
         client->send(msg);
     }
 
-    if (std::find(nodes.begin(), nodes.end(), XMPP_IOT_SENSOR_BAR) == nodes.end()) {
-        std::string msg = genCreateNodesMessage(XMPP_IOT_SENSOR_BAR);
+    if (std::find(nodes.begin(), nodes.end(), XMPP_IOT_SENSORS) == nodes.end()) {
+        std::string msg = genPublishSensorsNodeMessage(22.34, 42);
+        client->send(msg);
+    }
+
+    if (std::find(nodes.begin(), nodes.end(), XMPP_IOT_ACTUATORS) == nodes.end()) {
+        std::string msg = genPublishActuatorsNodeMessage();
         client->send(msg);
     }
 }

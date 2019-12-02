@@ -44,8 +44,8 @@ void XmppTask::init() {
 
 void XmppTask::tick() {
     if (client->isConnected()) {
-        double tmp = bmp180.readTemp();
-        std::cout << "Tmp: " << tmp << "\n";
+        double temp = bmp180.readTemp();
+        std::cout << "Temp: " << temp << "\n";
 
         int32_t pressure = bmp180.readPressure();
         std::cout << "Pressure: " << pressure << "\n";
