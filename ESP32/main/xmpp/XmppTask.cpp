@@ -49,6 +49,8 @@ void XmppTask::tick() {
 
         int32_t pressure = bmp180.readPressure();
         std::cout << "Pressure: " << pressure << "\n";
+
+        pubSubHelper->publishSensorsNode(temp, pressure);
     }
 }
 

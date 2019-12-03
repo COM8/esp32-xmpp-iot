@@ -3,6 +3,7 @@
 #include "../INonConstEventListener.hpp"
 #include "../XmppClient.hpp"
 #include "../messages/Message.hpp"
+#include <tinyxml2.h>
 
 //---------------------------------------------------------------------------
 namespace espiot::xmpp::helpers {
@@ -30,6 +31,8 @@ class PubSubHelper : public INonConstEventListener<messages::Message> {
     std::string genPublishUiNodeMessage();
     std::string genPublishSensorsNodeMessage(double temp, int32_t pressure);
     std::string genPublishActuatorsNodeMessage();
+    tinyxml2::XMLElement* genFieldNode(tinyxml2::XMLDocument& doc, const char* var, const char* type, const char* value);
+    tinyxml2::XMLElement* genNodePublishConfig(tinyxml2::XMLDocument& doc);
 
     public:
     static const std::string XMPP_IOT_SENSOR_TEMP;
@@ -40,7 +43,7 @@ class PubSubHelper : public INonConstEventListener<messages::Message> {
     static const std::string XMPP_IOT_ACTUATOR_SPEAKER;
     static const std::string XMPP_IOT_UI;
 
-    // void publishNode(std::string& nodeName, std::string& val);
+    void publishSensorsNode(double temp, int32_t pressure);
 
     PubSubHelper(std::shared_ptr<xmpp::XmppClient> client);
 

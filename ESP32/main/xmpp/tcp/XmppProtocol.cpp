@@ -1,6 +1,5 @@
 #include "XmppProtocol.hpp"
 #include "../XmppUtils.hpp"
-#include <iostream>
 
 //---------------------------------------------------------------------------
 namespace espiot::xmpp::tcp {
@@ -22,7 +21,6 @@ void XmppProtocol::data_received(XmppPacket& packet, int length) {
 uint8_t* XmppProtocol::get_write_pos(XmppPacket& packet) {
     size_t maxSize = offset + XmppPacket::PACKET_SIZE;
     if (packet.size() < maxSize) {
-        std::cout << "Resizing packet from " << packet.size() << " to " << maxSize << "\n";
         packet.resize(maxSize);
     }
     return packet.get_data_vec().data() + offset;
