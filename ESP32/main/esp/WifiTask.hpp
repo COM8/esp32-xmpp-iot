@@ -7,6 +7,7 @@
 #include <smooth/core/ipc/SubscribingTaskEventQueue.h>
 #include <smooth/core/network/NetworkStatus.h>
 #include <smooth/core/network/Wifi.h>
+#include "esp/Storage.hpp"
 
 //---------------------------------------------------------------------------
 namespace espiot::esp {
@@ -16,12 +17,13 @@ class WifiTask : public smooth::core::Task,
     private:
     smooth::core::network::Wifi& wifi;
     RgbLed& rgbLed;
+    esp::Storage& storage;
 
     using NetworkStatusQueue = smooth::core::ipc::SubscribingTaskEventQueue<smooth::core::network::NetworkStatus>;
     std::shared_ptr<NetworkStatusQueue> net_status;
 
     public:
-    WifiTask(smooth::core::network::Wifi& wifi, RgbLed& rgbLed);
+    WifiTask(smooth::core::network::Wifi& wifi, RgbLed& rgbLed, esp::Storage& storage);
 
     void init() override;
 

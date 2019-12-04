@@ -21,7 +21,7 @@ EspIoT::EspIoT() : Application(smooth::core::APPLICATION_BASE_PRIO, std::chrono:
                    rgbLed(GPIO_NUM_27, GPIO_NUM_26, GPIO_NUM_25),
                    resetButton(GPIO_NUM_4),
                    storage(),
-                   wifiTask(get_wifi(), rgbLed),
+                   wifiTask(get_wifi(), rgbLed, storage),
                    btServer(rgbLed, storage),
                    xmppTask(storage){};
 
