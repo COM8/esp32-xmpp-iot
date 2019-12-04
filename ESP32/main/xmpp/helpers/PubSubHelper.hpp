@@ -29,10 +29,13 @@ class PubSubHelper : public INonConstEventListener<messages::Message> {
 
     std::string genDiscoverNodesMessage();
     std::string genPublishUiNodeMessage();
-    std::string genPublishSensorsNodeMessage(double temp, int32_t pressure);
-    std::string genPublishActuatorsNodeMessage();
+    std::string genPublishTempNodeItemMessage(double temp);
+    std::string genPublishPressureNodeItemMessage(int32_t pressure);
+    std::string genPublishLedNodeItemMessage(bool on);
+    std::string genPublishSpeakerNodeItemMessage(bool on);
     tinyxml2::XMLElement* genFieldNode(tinyxml2::XMLDocument& doc, const char* var, const char* type, const char* value);
     tinyxml2::XMLElement* genNodePublishConfig(tinyxml2::XMLDocument& doc);
+    tinyxml2::XMLElement* genPublishItemNode(tinyxml2::XMLDocument& doc, const char* nodeName, const char* itemId);
 
     public:
     static const std::string XMPP_IOT_SENSOR_TEMP;
