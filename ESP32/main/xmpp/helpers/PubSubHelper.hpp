@@ -42,6 +42,7 @@ class PubSubHelper : public INonConstEventListener<messages::Message> {
     static const std::string XMPP_IOT_ACTUATOR_LED;
     static const std::string XMPP_IOT_ACTUATOR_SPEAKER;
     static const std::string XMPP_IOT_UI;
+    static const std::string XMPP_IOT_NAMESPACE;
 
     void publishSensorsNode(double temp, int32_t pressure);
 
