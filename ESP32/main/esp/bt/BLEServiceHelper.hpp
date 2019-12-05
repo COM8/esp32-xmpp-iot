@@ -24,8 +24,8 @@ class BLEServiceHelper {
     BLE2902* getNewCCCDescriptor(bool enableNotify, bool enableIndicate);
     BLEDescriptor* getNewCUDDescriptor(std::string description);
     void initDeviceInfoService(BLECharacteristicCallbacks* callback, BLEServer* server);
-    void initDeviceSettingsService(BLECharacteristicCallbacks* callback, BLEServer* server);
-    void initChallengeResponseService(BLECharacteristicCallbacks* callback, BLEServer* server);
+    void initDeviceSettings1Service(BLECharacteristicCallbacks* callback, BLEServer* server);
+    void initDeviceSettings2Service(BLECharacteristicCallbacks* callback, BLEServer* server);
 
     public:
     //-------------------
@@ -64,11 +64,6 @@ class BLEServiceHelper {
     // Custom UUID
     static const BLEUUID UUID_CHARACTERISTIC_SETTINGS_DONE;
     // Custom UUID
-    static const BLEUUID UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_READ;
-    // Custom UUID
-    static const BLEUUID UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_WRITE;
-    // Custom UUID
-    static const BLEUUID UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_UNLOCKED;
 
     //-------------------
     // Bluetooth service UUIDs:
@@ -80,19 +75,16 @@ class BLEServiceHelper {
     // Source: https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Services/org.bluetooth.service.device_information.xml
     static const BLEUUID UUID_SERVICE_DEVICE_INFORMATION;
     // Custom UUID
-    static const BLEUUID UUID_SERVICE_DEVICE_SETTINGS;
+    static const BLEUUID UUID_SERVICE_DEVICE_SETTINGS_1;
     // Custom UUID
-    static const BLEUUID UUID_SERVICE_CHALLENGE_RESPONSE;
+    static const BLEUUID UUID_SERVICE_DEVICE_SETTINGS_2;
 
     BLEServiceHelper(std::string btMac);
     ~BLEServiceHelper();
 
-    void
-    init(BLECharacteristicCallbacks* callback, BLEServer* server);
+    void init(BLECharacteristicCallbacks* callback, BLEServer* server);
     void start(BLEServer* server);
     void stop(BLEServer* server);
-    void unlock(BLEServer* server);
-    void lock(BLEServer* server);
 };
 //---------------------------------------------------------------------------
 } // namespace espiot::esp::bt

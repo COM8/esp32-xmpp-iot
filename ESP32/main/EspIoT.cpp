@@ -38,7 +38,7 @@ void EspIoT::initWithDummyValues() {
 
 void EspIoT::init() {
     // Set log level to DEBUG:
-    esp_log_level_set("*", ESP_LOG_DEBUG);
+    esp_log_level_set("*", ESP_LOG_INFO);
 
     storage.init();
     rgbLed.turnOnOnly(rgbLed.r);

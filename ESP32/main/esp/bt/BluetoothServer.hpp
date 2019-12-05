@@ -6,7 +6,6 @@
 #include "BLEServer.h"
 #include "BLEService.h"
 #include "BLEServiceHelper.hpp"
-#include "BLEUnlockHelper.hpp"
 #include "BluetoothServerCallback.hpp"
 #include "esp/RgbLed.hpp"
 #include "esp/Storage.hpp"
@@ -22,7 +21,6 @@ class BluetoothServer : public BLECharacteristicCallbacks, public BLEServerCallb
     bool running;
 
     BLEServer* server;
-    BLEUnlockHelper unlockHelper;
     BLEServiceHelper serviceHelper;
     BLEAdvertising* advertising;
     BLEAdvertisementData advertisingData;

@@ -13,7 +13,6 @@ set(SOURCES EspIoT.cpp
             esp/bt/BluetoothServer.cpp
             esp/bt/BLECharacteristicRWCallback.cpp
             esp/bt/BLEServiceHelper.cpp
-            esp/bt/BLEUnlockHelper.cpp
             esp/bt/BluetoothServerCallback.cpp
             
             esp/sensors/Bmp180.cpp

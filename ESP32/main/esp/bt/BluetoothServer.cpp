@@ -11,7 +11,6 @@ BluetoothServer::BluetoothServer(RgbLed& rgbLed, Storage& storage) : rgbLed(rgbL
                                                                      storage(storage),
                                                                      running(false),
                                                                      server(nullptr),
-                                                                     unlockHelper(),
                                                                      serviceHelper(getChipMacString()),
                                                                      advertising(nullptr),
                                                                      advertisingData(),
@@ -58,48 +57,33 @@ void BluetoothServer::stop() {
 void BluetoothServer::onRead(BLECharacteristic* characteristic) {}
 
 void BluetoothServer::onWrite(BLECharacteristic* characteristic) {
-    if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_CHALLENGE_RESPONSE_WRITE)) {
-        std::string value = characteristic->getValue();
-        unlockHelper.onChallengeAnswer(value);
-
-        if (!unlockHelper.isLocked()) {
-            serviceHelper.unlock(server);
-        }
-    } else if (!unlockHelper.isLocked()) {
-        std::string value = characteristic->getValue();
-        if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_WIFI_SSID)) {
-            storage.writeString(Storage::WIFI_SSID, value);
-        } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_WIFI_PASSWORD)) {
-            storage.writeString(Storage::WIFI_PASSWORD, value);
-        } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_JID)) {
-            storage.writeString(Storage::JID, value);
-        } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_JID_PASSWORD)) {
-            storage.writeString(Storage::JID_PASSWORD, value);
-        } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_JID_SENDER)) {
-            storage.writeString(Storage::JID_SENDER, value);
-        } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_SETTINGS_DONE)) {
-            storage.writeBool(Storage::INITIALIZED, true);
-            if (serverCallback) {
-                std::string wifiSsid = storage.readString(Storage::WIFI_SSID);
-                std::string wifiPassword = storage.readString(Storage::WIFI_PASSWORD);
-                std::string jid = storage.readString(Storage::JID);
-                std::string jidPassword = storage.readString(Storage::JID_PASSWORD);
-                std::string jidSender = storage.readString(Storage::JID_SENDER);
-                serverCallback->onConfigurationDone(wifiSsid, wifiPassword, jid, jidPassword, jidSender);
-            }
+    std::string value = characteristic->getValue();
+    if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_WIFI_SSID)) {
+        storage.writeString(Storage::WIFI_SSID, value);
+    } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_WIFI_PASSWORD)) {
+        storage.writeString(Storage::WIFI_PASSWORD, value);
+    } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_JID)) {
+        storage.writeString(Storage::JID, value);
+    } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_JID_PASSWORD)) {
+        storage.writeString(Storage::JID_PASSWORD, value);
+    } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_JID_SENDER)) {
+        storage.writeString(Storage::JID_SENDER, value);
+    } else if (characteristic->getUUID().equals(BLEServiceHelper::UUID_CHARACTERISTIC_SETTINGS_DONE)) {
+        storage.writeBool(Storage::INITIALIZED, true);
+        if (serverCallback) {
+            std::string wifiSsid = storage.readString(Storage::WIFI_SSID);
+            std::string wifiPassword = storage.readString(Storage::WIFI_PASSWORD);
+            std::string jid = storage.readString(Storage::JID);
+            std::string jidPassword = storage.readString(Storage::JID_PASSWORD);
+            std::string jidSender = storage.readString(Storage::JID_SENDER);
+            serverCallback->onConfigurationDone(wifiSsid, wifiPassword, jid, jidPassword, jidSender);
         }
     }
 }
 
-void BluetoothServer::onConnect(BLEServer* pServer) {
-    // Make sure we lock all information as soon as somebody else connects:
-    serviceHelper.lock(server);
-}
+void BluetoothServer::onConnect(BLEServer* pServer) {}
 
-void BluetoothServer::onDisconnect(BLEServer* pServer) {
-    // Make sure we lock all information as soon as somebody disconnects:
-    serviceHelper.lock(server);
-}
+void BluetoothServer::onDisconnect(BLEServer* pServer) {}
 
 void BluetoothServer::registerCallback(BluetoothServerCallback* serverCallback) {
     this->serverCallback = serverCallback;
