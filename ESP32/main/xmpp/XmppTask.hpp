@@ -3,6 +3,7 @@
 #include "INonConstEventListener.hpp"
 #include "esp/Storage.hpp"
 #include "esp/sensors/Bmp180.hpp"
+#include "esp/sensors/Mq2.hpp"
 #include "helpers/PubSubHelper.hpp"
 #include "messages/Message.hpp"
 #include "xmpp/XmppClient.hpp"
@@ -26,6 +27,7 @@ class XmppTask : public smooth::core::Task,
 
     esp::Storage& storage;
     esp::sensors::Bmp180 bmp180;
+    esp::sensors::Mq2 mq2;
 
     std::shared_ptr<xmpp::XmppClient> client;
     std::unique_ptr<helpers::PubSubHelper> pubSubHelper;

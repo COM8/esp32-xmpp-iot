@@ -10,12 +10,14 @@ set(SOURCES EspIoT.cpp
             esp/WifiTask.cpp
             esp/Storage.cpp
             esp/Button.cpp
+            esp/Relay.cpp
             esp/bt/BluetoothServer.cpp
             esp/bt/BLECharacteristicRWCallback.cpp
             esp/bt/BLEServiceHelper.cpp
             esp/bt/BluetoothServerCallback.cpp
             
             esp/sensors/Bmp180.cpp
+            esp/sensors/Mq2.cpp
             
             xmpp/XmppClient.cpp
             xmpp/XmppConnection.cpp
@@ -36,7 +38,7 @@ set(SOURCES EspIoT.cpp
 
 idf_component_register(SRCS ${SOURCES}
                        INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR} $ENV{IDF_PATH}/components
-                       REQUIRES smooth_component bt cpp_utils mbedtls)
+                       REQUIRES smooth_component bt cpp_utils mbedtls esp_adc_cal)
 
 
 # -----------------------Tiny-XML-2-----------------------

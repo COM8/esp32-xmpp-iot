@@ -1,12 +1,23 @@
 #pragma once
 
-#include <string>
+#include "driver/gpio.h"
+#include <smooth/core/io/Output.h>
 
 //---------------------------------------------------------------------------
 namespace espiot::esp {
 //---------------------------------------------------------------------------
-const std::string SSID = "Katze";
-const std::string PASSWORD = "50734824705379318002";
+class Relay {
+    private:
+    bool active;
+
+    public:
+    smooth::core::io::Output signal;
+
+    Relay(gpio_num_t signal);
+
+    void set(bool active);
+    bool toggle();
+};
 //---------------------------------------------------------------------------
 } // namespace espiot::esp
 //---------------------------------------------------------------------------

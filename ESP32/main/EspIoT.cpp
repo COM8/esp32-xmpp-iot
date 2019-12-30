@@ -43,7 +43,7 @@ void EspIoT::init() {
     storage.init();
     rgbLed.turnOnOnly(rgbLed.r);
 
-    // initWithDummyValues();
+    initWithDummyValues();
 
     // Check if reset button is pressen:
     if (resetButton.isPressed()) {

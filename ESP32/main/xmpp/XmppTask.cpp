@@ -16,10 +16,11 @@ using namespace smooth::core;
 //---------------------------------------------------------------------------
 const std::string XmppTask::INITIAL_HELLO_MESSAGE = "Hi from the ESP32. Please mirror this message!";
 
-XmppTask::XmppTask(esp::Storage& storage) : Task("XMPP Task", 4096, smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(5), 1),
+XmppTask::XmppTask(esp::Storage& storage) : Task("XMPP Task", 4096, smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(1), 1),
                                             net_status(NetworkStatusQueue::create(2, *this, *this)),
                                             storage(storage),
                                             bmp180(GPIO_NUM_32, GPIO_NUM_33),
+                                            mq2(),
                                             client(nullptr),
                                             pubSubHelper(nullptr) {}
 
@@ -49,7 +50,10 @@ void XmppTask::tick() {
         int32_t pressure = bmp180.readPressure();
         std::cout << "Pressure: " << pressure << "\n";
 
-        pubSubHelper->publishSensorsNode(temp, pressure);
+        int32_t val = mq2.read();
+        std::cout << "MQ2: " << val << "\n";
+
+        // pubSubHelper->publishSensorsNode(temp, pressure);
     }
 }
 
