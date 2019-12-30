@@ -18,6 +18,7 @@ set(SOURCES EspIoT.cpp
             
             esp/sensors/Bmp180.cpp
             esp/sensors/Mq2.cpp
+            esp/sensors/Photoresistor.cpp
             
             xmpp/XmppClient.cpp
             xmpp/XmppConnection.cpp
