@@ -35,6 +35,9 @@ class PubSubHelper : public INonConstEventListener<messages::Message> {
     std::string genPublishSpeakerNodeItemMessage(bool on);
     tinyxml2::XMLElement* genFieldNode(tinyxml2::XMLDocument& doc, const char* var, const char* type, const char* value);
     tinyxml2::XMLElement* genNodePublishConfig(tinyxml2::XMLDocument& doc);
+    /**
+     * Generates a new PEP node.
+     **/
     tinyxml2::XMLElement* genPublishItemNode(tinyxml2::XMLDocument& doc, const char* nodeName, const char* itemId);
 
     public:

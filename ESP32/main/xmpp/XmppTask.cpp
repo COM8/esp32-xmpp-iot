@@ -16,7 +16,7 @@ using namespace smooth::core;
 //---------------------------------------------------------------------------
 const std::string XmppTask::INITIAL_HELLO_MESSAGE = "Hi from the ESP32. Please mirror this message!";
 
-XmppTask::XmppTask(esp::Storage& storage) : Task("XMPP Task", 4096, smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(1), 1),
+XmppTask::XmppTask(esp::Storage& storage) : Task("XMPP Task", 4096, smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(3), 1),
                                             net_status(NetworkStatusQueue::create(2, *this, *this)),
                                             storage(storage),
                                             bmp180(GPIO_NUM_32, GPIO_NUM_33),
@@ -53,7 +53,7 @@ void XmppTask::tick() {
         int32_t val = mq2.read();
         std::cout << "MQ2: " << val << "\n";
 
-        // pubSubHelper->publishSensorsNode(temp, pressure);
+        pubSubHelper->publishSensorsNode(temp, pressure);
     }
 }
 
@@ -84,7 +84,7 @@ void XmppTask::handlePresenceMessages(const tinyxml2::XMLElement* elem) {
     const tinyxml2::XMLAttribute* attrib = elem->FindAttribute("type");
     // For now approve all presence subscription requests:
     if (attrib && !strcmp(attrib->Value(), "subscribe")) {
-        attrib = elem->FindAttribute("to");
+        attrib = elem->FindAttribute("from");
         std::string bareJid = attrib->Value();
         client->approvePresenceSubscription(bareJid);
     }

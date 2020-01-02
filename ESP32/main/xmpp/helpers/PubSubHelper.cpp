@@ -108,7 +108,6 @@ std::string PubSubHelper::genPublishUiNodeMessage() {
 tinyxml2::XMLElement* PubSubHelper::genPublishItemNode(tinyxml2::XMLDocument& doc, const char* nodeName, const char* itemId) {
     tinyxml2::XMLElement* iqNode = doc.NewElement("iq");
     iqNode->SetAttribute("type", "set");
-    iqNode->SetAttribute("to", ("pubsub." + client->account.jid.domainPart).c_str());
     iqNode->SetAttribute("from", client->account.jid.getFull().c_str());
     iqNode->SetAttribute("id", randFakeUuid().c_str());
     doc.InsertEndChild(iqNode);
@@ -193,10 +192,10 @@ std::string PubSubHelper::genPublishSpeakerNodeItemMessage(bool on) {
 tinyxml2::XMLElement* PubSubHelper::genFieldNode(tinyxml2::XMLDocument& doc, const char* var, const char* type, const char* value) {
     tinyxml2::XMLElement* fieldNode = doc.NewElement("field");
     fieldNode->SetAttribute("var", var);
-    if(type) {
+    if (type) {
         fieldNode->SetAttribute("type", type);
     }
-    
+
     tinyxml2::XMLElement* valueNode = doc.NewElement("value");
     valueNode->SetText(value);
     fieldNode->InsertEndChild(valueNode);
@@ -214,7 +213,7 @@ tinyxml2::XMLElement* PubSubHelper::genNodePublishConfig(tinyxml2::XMLDocument& 
 
     publishOptionsNode->InsertEndChild(genFieldNode(doc, "FORM_TYPE", "hidden", "http://jabber.org/protocol/pubsub#publish-options"));
     publishOptionsNode->InsertEndChild(genFieldNode(doc, "pubsub#persist_items", nullptr, "true"));
-    publishOptionsNode->InsertEndChild(genFieldNode(doc, "pubsub#access_model", nullptr, "roster"));
+    publishOptionsNode->InsertEndChild(genFieldNode(doc, "pubsub#access_model", nullptr, "presence"));
 
     return publishOptionsNode;
 }
@@ -249,7 +248,7 @@ void PubSubHelper::onDiscoverNodesReply(messages::Message& event) {
     // UI:
     std::string msg = genPublishUiNodeMessage();
     client->send(msg);
-    
+
     // Sensors:
     msg = genPublishTempNodeItemMessage(0.0);
     client->send(msg);
