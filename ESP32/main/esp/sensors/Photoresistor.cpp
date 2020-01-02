@@ -8,12 +8,12 @@ namespace espiot::esp::sensors {
  * Default to ADC unit 1 and channel 5 (GPIO33) since ADC unit is used for Wi-Fi.
  * Reference: https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/peripherals/adc.html
  **/
-Mq2::Mq2() : Mq2(ADC_UNIT_1, ADC1_CHANNEL_5) {}
+Photoresistor::Photoresistor() : Photoresistor(ADC_UNIT_1, ADC1_CHANNEL_5) {}
 
-Mq2::Mq2(adc_unit_t unit, adc1_channel_t channel) : unit(unit),
-                                                    channel(channel),
-                                                    atten(ADC_ATTEN_DB_0),
-                                                    adc_chars() {
+Photoresistor::Photoresistor(adc_unit_t unit, adc1_channel_t channel) : unit(unit),
+                                                                        channel(channel),
+                                                                        atten(ADC_ATTEN_DB_0),
+                                                                        adc_chars() {
     //Check if Two Point or Vref are burned into eFuse
     check_efuse();
 
@@ -30,7 +30,7 @@ Mq2::Mq2(adc_unit_t unit, adc1_channel_t channel) : unit(unit),
     print_char_val_type(val_type);
 }
 
-uint32_t Mq2::read() {
+uint32_t Photoresistor::read() {
     uint32_t adc_reading = 0;
     //Multisampling
     for (int i = 0; i < NO_OF_SAMPLES; i++) {
@@ -45,7 +45,7 @@ uint32_t Mq2::read() {
     return adc_reading / NO_OF_SAMPLES;
 }
 
-void Mq2::check_efuse() {
+void Photoresistor::check_efuse() {
     //Check TP is burned into eFuse
     if (esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_TP) == ESP_OK) {
         std::cout << "eFuse Two Point: Supported.\n";
@@ -61,7 +61,7 @@ void Mq2::check_efuse() {
     }
 }
 
-void Mq2::print_char_val_type(esp_adc_cal_value_t val_type) {
+void Photoresistor::print_char_val_type(esp_adc_cal_value_t val_type) {
     if (val_type == ESP_ADC_CAL_VAL_EFUSE_TP) {
         std::cout << "Characterized using Two Point Value.\n";
     } else if (val_type == ESP_ADC_CAL_VAL_EFUSE_VREF) {
