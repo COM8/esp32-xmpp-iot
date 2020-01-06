@@ -47,7 +47,6 @@ std::string PubSubHelper::genDiscoverNodesMessage() {
     tinyxml2::XMLDocument doc;
     tinyxml2::XMLElement* iqNode = doc.NewElement("iq");
     iqNode->SetAttribute("type", "get");
-    iqNode->SetAttribute("to", ("pubsub." + client->account.jid.domainPart).c_str());
     iqNode->SetAttribute("from", client->account.jid.getFull().c_str());
     iqNode->SetAttribute("id", randFakeUuid().c_str());
 
@@ -202,6 +201,26 @@ tinyxml2::XMLElement* PubSubHelper::genFieldNode(tinyxml2::XMLDocument& doc, con
     return fieldNode;
 }
 
+std::string PubSubHelper::genRequestNodeConfigMessage(const std::string& nodeName) {
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement* iqNode = doc.NewElement("iq");
+    iqNode->SetAttribute("type", "get");
+    iqNode->SetAttribute("from", client->account.jid.getFull().c_str());
+    iqNode->SetAttribute("id", randFakeUuid().c_str());
+
+    tinyxml2::XMLElement* pubSubNode = doc.NewElement("pubsub");
+    pubSubNode->SetAttribute("xmlns", "http://jabber.org/protocol/pubsub#owner");
+    iqNode->InsertEndChild(pubSubNode);
+
+    tinyxml2::XMLElement* configureNode = doc.NewElement("configure");
+    configureNode->SetAttribute("node", nodeName.c_str());
+    pubSubNode->InsertEndChild(configureNode);
+
+    tinyxml2::XMLPrinter printer;
+    iqNode->Accept(&printer);
+    return printer.CStr();
+}
+
 tinyxml2::XMLElement* PubSubHelper::genNodePublishConfig(tinyxml2::XMLDocument& doc) {
     // https://xmpp.org/extensions/xep-0223.html
     tinyxml2::XMLElement* publishOptionsNode = doc.NewElement("publish-options");
@@ -214,6 +233,7 @@ tinyxml2::XMLElement* PubSubHelper::genNodePublishConfig(tinyxml2::XMLDocument& 
     publishOptionsNode->InsertEndChild(genFieldNode(doc, "FORM_TYPE", "hidden", "http://jabber.org/protocol/pubsub#publish-options"));
     publishOptionsNode->InsertEndChild(genFieldNode(doc, "pubsub#persist_items", nullptr, "true"));
     publishOptionsNode->InsertEndChild(genFieldNode(doc, "pubsub#access_model", nullptr, "presence"));
+    publishOptionsNode->InsertEndChild(genFieldNode(doc, "pubsub#publish_model", nullptr, "open")); // Perhaps replace with "subscribers"
 
     return publishOptionsNode;
 }

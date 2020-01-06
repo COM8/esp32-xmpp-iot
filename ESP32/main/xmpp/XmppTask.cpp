@@ -54,6 +54,9 @@ void XmppTask::tick() {
         std::cout << "MQ2: " << val << "\n";
 
         pubSubHelper->publishSensorsNode(temp, pressure);
+
+        std::string msg = pubSubHelper->genRequestNodeConfigMessage(pubSubHelper->XMPP_IOT_ACTUATORS);
+        client->send(msg);
     }
 }
 

@@ -51,6 +51,7 @@ class PubSubHelper : public INonConstEventListener<messages::Message> {
     static const std::string XMPP_IOT_NAMESPACE;
 
     void publishSensorsNode(double temp, int32_t pressure);
+    std::string genRequestNodeConfigMessage(const std::string& nodeName);
 
     PubSubHelper(std::shared_ptr<xmpp::XmppClient> client);
 
