@@ -7,8 +7,8 @@
 #include "BLEService.h"
 #include "BLEServiceHelper.hpp"
 #include "BluetoothServerCallback.hpp"
-#include "esp/RgbLed.hpp"
 #include "esp/Storage.hpp"
+#include "esp/actuators/RgbLed.hpp"
 #include <string>
 
 //---------------------------------------------------------------------------
@@ -16,7 +16,7 @@ namespace espiot::esp::bt {
 //---------------------------------------------------------------------------
 class BluetoothServer : public BLECharacteristicCallbacks, public BLEServerCallbacks {
     private:
-    RgbLed& rgbLed;
+    actuators::RgbLed& rgbLed;
     Storage& storage;
     bool running;
 
@@ -27,7 +27,7 @@ class BluetoothServer : public BLECharacteristicCallbacks, public BLEServerCallb
     BluetoothServerCallback* serverCallback;
 
     public:
-    BluetoothServer(RgbLed& rgbLed, Storage& storage);
+    BluetoothServer(actuators::RgbLed& rgbLed, Storage& storage);
     ~BluetoothServer() = default;
 
     bool isRunning();

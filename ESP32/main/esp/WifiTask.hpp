@@ -1,13 +1,13 @@
 #pragma once
 
-#include "RgbLed.hpp"
+#include "actuators/RgbLed.hpp"
+#include "esp/Storage.hpp"
 #include <smooth/core/Task.h>
 #include <smooth/core/io/Output.h>
 #include <smooth/core/ipc/IEventListener.h>
 #include <smooth/core/ipc/SubscribingTaskEventQueue.h>
 #include <smooth/core/network/NetworkStatus.h>
 #include <smooth/core/network/Wifi.h>
-#include "esp/Storage.hpp"
 
 //---------------------------------------------------------------------------
 namespace espiot::esp {
@@ -16,14 +16,14 @@ class WifiTask : public smooth::core::Task,
                  public smooth::core::ipc::IEventListener<smooth::core::network::NetworkStatus> {
     private:
     smooth::core::network::Wifi& wifi;
-    RgbLed& rgbLed;
+    actuators::RgbLed& rgbLed;
     esp::Storage& storage;
 
     using NetworkStatusQueue = smooth::core::ipc::SubscribingTaskEventQueue<smooth::core::network::NetworkStatus>;
     std::shared_ptr<NetworkStatusQueue> net_status;
 
     public:
-    WifiTask(smooth::core::network::Wifi& wifi, RgbLed& rgbLed, esp::Storage& storage);
+    WifiTask(smooth::core::network::Wifi& wifi, actuators::RgbLed& rgbLed, esp::Storage& storage);
 
     void init() override;
 

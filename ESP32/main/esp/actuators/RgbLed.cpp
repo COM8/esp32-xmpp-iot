@@ -1,7 +1,7 @@
 #include "RgbLed.hpp"
 
 //---------------------------------------------------------------------------
-namespace espiot::esp {
+namespace espiot::esp::actuators {
 //---------------------------------------------------------------------------
 RgbLed::RgbLed(gpio_num_t r, gpio_num_t g, gpio_num_t b) : r(r, false, false, false),
                                                            g(g, false, false, false),
@@ -27,5 +27,5 @@ void RgbLed::turnOff(smooth::core::io::Output& led) {
     led.set(false);
 }
 //---------------------------------------------------------------------------
-} // namespace espiot::esp
+} // namespace espiot::esp::actuators
 //---------------------------------------------------------------------------

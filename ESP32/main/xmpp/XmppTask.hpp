@@ -2,6 +2,7 @@
 
 #include "INonConstEventListener.hpp"
 #include "esp/Storage.hpp"
+#include "esp/actuators/Speaker.hpp"
 #include "esp/sensors/Bmp180.hpp"
 #include "esp/sensors/Mq2.hpp"
 #include "helpers/PubSubHelper.hpp"
@@ -28,6 +29,7 @@ class XmppTask : public smooth::core::Task,
     esp::Storage& storage;
     esp::sensors::Bmp180 bmp180;
     esp::sensors::Mq2 mq2;
+    esp::actuators::Speaker speaker;
 
     std::shared_ptr<xmpp::XmppClient> client;
     std::unique_ptr<helpers::PubSubHelper> pubSubHelper;
@@ -35,6 +37,7 @@ class XmppTask : public smooth::core::Task,
     static const std::string INITIAL_HELLO_MESSAGE;
 
     void onReady();
+    void handleIoTMessageMessage(const char* msg);
 
     public:
     XmppTask(esp::Storage& storage);

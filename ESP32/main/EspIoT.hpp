@@ -1,9 +1,9 @@
 #pragma once
 
-#include "esp/Button.hpp"
-#include "esp/RgbLed.hpp"
 #include "esp/Storage.hpp"
 #include "esp/WifiTask.hpp"
+#include "esp/actuators/Button.hpp"
+#include "esp/actuators/RgbLed.hpp"
 #include "esp/bt/BluetoothServer.hpp"
 #include "esp/bt/BluetoothServerCallback.hpp"
 #include "esp/sensors/Bmp180.hpp"
@@ -26,8 +26,8 @@ void app_main(void);
 //---------------------------------------------------------------------------
 class EspIoT : public smooth::core::Application, public esp::bt::BluetoothServerCallback {
     private:
-    esp::RgbLed rgbLed;
-    esp::Button resetButton;
+    esp::actuators::RgbLed rgbLed;
+    esp::actuators::Button resetButton;
     esp::Storage storage;
     esp::WifiTask wifiTask;
     esp::bt::BluetoothServer btServer;

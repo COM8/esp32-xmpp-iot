@@ -21,6 +21,7 @@ XmppTask::XmppTask(esp::Storage& storage) : Task("XMPP Task", 4096, smooth::core
                                             storage(storage),
                                             bmp180(GPIO_NUM_32, GPIO_NUM_33),
                                             mq2(),
+                                            speaker(GPIO_NUM_13),
                                             client(nullptr),
                                             pubSubHelper(nullptr) {}
 
@@ -57,6 +58,12 @@ void XmppTask::tick() {
 
         std::string msg = pubSubHelper->genRequestNodeConfigMessage(pubSubHelper->XMPP_IOT_ACTUATORS);
         client->send(msg);
+    }
+
+    if (speaker.get() == 0) {
+        speaker.set(50);
+    } else {
+        speaker.set(1);
     }
 }
 
@@ -96,19 +103,31 @@ void XmppTask::handlePresenceMessages(const tinyxml2::XMLElement* elem) {
 void XmppTask::handleMessageMessages(const tinyxml2::XMLElement* elem) {
     elem = elem->FirstChildElement("body");
     if (elem) {
-        if (!strcmp(INITIAL_HELLO_MESSAGE.c_str(), elem->GetText())) {
-            std::string to = storage.readString(esp::Storage::JID_SENDER);
+        if (!storage.readBool(esp::Storage::SETUP_DONE)) {
+            if (!strcmp(INITIAL_HELLO_MESSAGE.c_str(), elem->GetText())) {
+                std::string to = storage.readString(esp::Storage::JID_SENDER);
 
-            // Add to roster:
-            client->addToRoster(to);
+                // Add to roster:
+                client->addToRoster(to);
 
-            // Send setup done message:
-            std::string body = "Setup done!";
-            client->sendMessage(to, body);
-            storage.writeBool(esp::Storage::SETUP_DONE, true);
-            std::cout << "Setup done!\n";
-            onReady();
+                // Send setup done message:
+                std::string body = "Setup done!";
+                client->sendMessage(to, body);
+                storage.writeBool(esp::Storage::SETUP_DONE, true);
+                std::cout << "Setup done!\n";
+                onReady();
+            }
+        } else {
+            handleIoTMessageMessage(elem->GetText());
         }
+    }
+}
+
+void XmppTask::handleIoTMessageMessage(const char* msg) {
+    if (!strcmp("set speaker 1", msg)) {
+        speaker.set(1000);
+    } else if (!strcmp("set speaker 0", msg)) {
+        speaker.set(0);
     }
 }
 

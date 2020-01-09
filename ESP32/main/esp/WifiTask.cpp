@@ -11,11 +11,11 @@ namespace espiot::esp {
 //---------------------------------------------------------------------------
 using namespace smooth::core;
 //---------------------------------------------------------------------------
-WifiTask::WifiTask(network::Wifi& wifi, RgbLed& rgbLed, esp::Storage& storage) : Task("WIFI Task", 0, smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(1), 1),
-                                                          wifi(wifi),
-                                                          rgbLed(rgbLed),
-                                                          storage(storage),
-                                                          net_status(NetworkStatusQueue::create(2, *this, *this)) {}
+WifiTask::WifiTask(network::Wifi& wifi, actuators::RgbLed& rgbLed, esp::Storage& storage) : Task("WIFI Task", 0, smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(1), 1),
+                                                                                            wifi(wifi),
+                                                                                            rgbLed(rgbLed),
+                                                                                            storage(storage),
+                                                                                            net_status(NetworkStatusQueue::create(2, *this, *this)) {}
 
 void WifiTask::init() {
     std::cout << "Scanning for wifi...\n";
@@ -29,7 +29,7 @@ void WifiTask::init() {
     std::string ssid = storage.readString(esp::Storage::WIFI_SSID);
     std::string password = storage.readString(esp::Storage::WIFI_PASSWORD);
     std::cout << "Connecting to Wi-Fi '" << ssid << "' with password: '" << password << "'\n";
-     wifi.set_ap_credentials(ssid, password);
+    wifi.set_ap_credentials(ssid, password);
     wifi.connect_to_ap();
 }
 

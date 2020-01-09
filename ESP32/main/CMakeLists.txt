@@ -6,16 +6,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES EspIoT.cpp
 
-            esp/RgbLed.cpp
             esp/WifiTask.cpp
             esp/Storage.cpp
-            esp/Button.cpp
-            esp/Relay.cpp
             esp/bt/BluetoothServer.cpp
             esp/bt/BLECharacteristicRWCallback.cpp
             esp/bt/BLEServiceHelper.cpp
             esp/bt/BluetoothServerCallback.cpp
-            
+
+            esp/actuators/RgbLed.cpp
+            esp/actuators/Button.cpp
+            esp/actuators/Relay.cpp
+            esp/actuators/Speaker.cpp
+
             esp/sensors/Bmp180.cpp
             esp/sensors/Mq2.cpp
             esp/sensors/Photoresistor.cpp

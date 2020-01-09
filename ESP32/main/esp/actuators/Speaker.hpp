@@ -1,23 +1,21 @@
 #pragma once
 
-#include "driver/gpio.h"
-#include <smooth/core/io/Output.h>
+#include "driver/ledc.h"
 
 //---------------------------------------------------------------------------
-namespace espiot::esp {
+namespace espiot::esp::actuators {
 //---------------------------------------------------------------------------
-class Relay {
+class Speaker {
     private:
-    bool active;
+    ledc_timer_config_t ledc_timer;
+    ledc_channel_config_t ledc_channel;
 
     public:
-    smooth::core::io::Output signal;
+    Speaker(gpio_num_t signal);
 
-    Relay(gpio_num_t signal);
-
-    void set(bool active);
-    bool toggle();
+    void set(uint32_t freq_hz);
+    uint32_t get();
 };
 //---------------------------------------------------------------------------
-} // namespace espiot::esp
+} // namespace espiot::esp::actuators
 //---------------------------------------------------------------------------

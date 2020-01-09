@@ -7,14 +7,14 @@
 //---------------------------------------------------------------------------
 namespace espiot::esp::bt {
 //---------------------------------------------------------------------------
-BluetoothServer::BluetoothServer(RgbLed& rgbLed, Storage& storage) : rgbLed(rgbLed),
-                                                                     storage(storage),
-                                                                     running(false),
-                                                                     server(nullptr),
-                                                                     serviceHelper(getChipMacString()),
-                                                                     advertising(nullptr),
-                                                                     advertisingData(),
-                                                                     serverCallback(nullptr) {}
+BluetoothServer::BluetoothServer(actuators::RgbLed& rgbLed, Storage& storage) : rgbLed(rgbLed),
+                                                                                storage(storage),
+                                                                                running(false),
+                                                                                server(nullptr),
+                                                                                serviceHelper(getChipMacString()),
+                                                                                advertising(nullptr),
+                                                                                advertisingData(),
+                                                                                serverCallback(nullptr) {}
 
 bool BluetoothServer::isRunning() {
     return running;

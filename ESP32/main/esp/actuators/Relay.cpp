@@ -1,7 +1,7 @@
 #include "Relay.hpp"
 
 //---------------------------------------------------------------------------
-namespace espiot::esp {
+namespace espiot::esp::actuators {
 //---------------------------------------------------------------------------
 Relay::Relay(gpio_num_t signal) : active(false),
                                   signal(signal, true, false, false) {}
@@ -16,5 +16,5 @@ bool Relay::toggle() {
     return active;
 }
 //---------------------------------------------------------------------------
-} // namespace espiot::esp
+} // namespace espiot::esp::actuators
 //---------------------------------------------------------------------------

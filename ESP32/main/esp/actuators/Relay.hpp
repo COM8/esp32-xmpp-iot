@@ -1,19 +1,23 @@
 #pragma once
 
 #include "driver/gpio.h"
-#include <smooth/core/io/Input.h>
+#include <smooth/core/io/Output.h>
 
 //---------------------------------------------------------------------------
-namespace espiot::esp {
+namespace espiot::esp::actuators {
 //---------------------------------------------------------------------------
-class Button {
+class Relay {
+    private:
+    bool active;
+
     public:
-    smooth::core::io::Input signal;
+    smooth::core::io::Output signal;
 
-    Button(gpio_num_t signal);
+    Relay(gpio_num_t signal);
 
-    bool isPressed();
+    void set(bool active);
+    bool toggle();
 };
 //---------------------------------------------------------------------------
-} // namespace espiot::esp
+} // namespace espiot::esp::actuators
 //---------------------------------------------------------------------------
