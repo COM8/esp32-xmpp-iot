@@ -2,6 +2,7 @@
 
 #include "INonConstEventListener.hpp"
 #include "esp/Storage.hpp"
+#include "esp/actuators/Relay.hpp"
 #include "esp/actuators/Speaker.hpp"
 #include "esp/sensors/Bmp180.hpp"
 #include "esp/sensors/Mq2.hpp"
@@ -15,6 +16,11 @@
 #include <smooth/core/network/IPv4.h>
 #include <smooth/core/network/NetworkStatus.h>
 
+// #define BMP180
+#define MQ2
+// #define SPEAKER
+// #define RELAY
+
 //---------------------------------------------------------------------------
 namespace espiot::xmpp {
 //---------------------------------------------------------------------------
@@ -27,9 +33,19 @@ class XmppTask : public smooth::core::Task,
     std::shared_ptr<NetworkStatusQueue> net_status;
 
     esp::Storage& storage;
+
+#ifdef BMP180
     esp::sensors::Bmp180 bmp180;
+#endif // BMP180
+#ifdef MQ2
     esp::sensors::Mq2 mq2;
+#endif // MQ2
+#ifdef SPEAKER
     esp::actuators::Speaker speaker;
+#endif // SPEAKER
+#ifdef RELAY
+    esp::actuators::Relay relay;
+#endif // RELAY
 
     std::shared_ptr<xmpp::XmppClient> client;
     std::unique_ptr<helpers::PubSubHelper> pubSubHelper;

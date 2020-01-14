@@ -19,11 +19,21 @@ const std::string XmppTask::INITIAL_HELLO_MESSAGE = "Hi from the ESP32. Please m
 XmppTask::XmppTask(esp::Storage& storage) : Task("XMPP Task", 4096, smooth::core::APPLICATION_BASE_PRIO, std::chrono::seconds(3), 1),
                                             net_status(NetworkStatusQueue::create(2, *this, *this)),
                                             storage(storage),
+#ifdef BMP180
                                             bmp180(GPIO_NUM_32, GPIO_NUM_33),
+#endif // BMP180
+#ifdef MQ2
                                             mq2(),
+#endif // MQ2
+#ifdef SPEAKER
                                             speaker(GPIO_NUM_13),
+#endif // SPEAKER
+#ifdef RELAY
+                                            relay(GPIO_NUM_32),
+#endif // RELAY
                                             client(nullptr),
-                                            pubSubHelper(nullptr) {}
+                                            pubSubHelper(nullptr) {
+}
 
 XmppTask::~XmppTask() {
     if (client) {
@@ -45,25 +55,25 @@ void XmppTask::init() {
 
 void XmppTask::tick() {
     if (client->isConnected()) {
+#ifdef BMP180
         double temp = bmp180.readTemp();
         std::cout << "Temp: " << temp << "\n";
+        pubSubHelper->publishTempNode(temp);
 
         int32_t pressure = bmp180.readPressure();
         std::cout << "Pressure: " << pressure << "\n";
-
+        pubSubHelper->publishPressureNode(pressure);
+#endif // BMP180
+#ifdef MQ2
         int32_t val = mq2.read();
         std::cout << "MQ2: " << val << "\n";
-
-        pubSubHelper->publishSensorsNode(temp, pressure);
-
-        std::string msg = pubSubHelper->genRequestNodeConfigMessage(pubSubHelper->XMPP_IOT_ACTUATORS);
-        client->send(msg);
-    }
-
-    if (speaker.get() == 0) {
-        speaker.set(50);
-    } else {
-        speaker.set(1);
+        pubSubHelper->publishMq2Node(val);
+#endif // BMP180
+#ifdef RELAY
+        bool relayOn = relay.toggle();
+        std::cout << "RELAY: " << relayOn << "\n";
+        pubSubHelper->publishRelayNode(relayOn);
+#endif // RELAY
     }
 }
 
@@ -124,11 +134,13 @@ void XmppTask::handleMessageMessages(const tinyxml2::XMLElement* elem) {
 }
 
 void XmppTask::handleIoTMessageMessage(const char* msg) {
+#ifdef SPEAKER
     if (!strcmp("set speaker 1", msg)) {
-        speaker.set(1000);
+        // speaker.set(1000);
     } else if (!strcmp("set speaker 0", msg)) {
-        speaker.set(0);
+        // speaker.set(0);
     }
+#endif // SPEAKER
 }
 
 void XmppTask::event(const XmppClientConnectionState& event) {

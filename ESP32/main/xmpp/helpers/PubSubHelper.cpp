@@ -8,10 +8,13 @@ namespace espiot::xmpp::helpers {
 //---------------------------------------------------------------------------
 const std::string PubSubHelper::XMPP_IOT_SENSOR_TEMP = "xmpp.iot.sensor.temp";
 const std::string PubSubHelper::XMPP_IOT_SENSOR_BAR = "xmpp.iot.sensor.bar";
+const std::string PubSubHelper::XMPP_IOT_SENSOR_MQ2 = "xmpp.iot.sensor.mq2";
+const std::string PubSubHelper::XMPP_IOT_SENSOR_PHOTORESISTOR = "xmpp.iot.sensor.photoresistor";
 const std::string PubSubHelper::XMPP_IOT_SENSORS = "xmpp.iot.sensors";
 const std::string PubSubHelper::XMPP_IOT_ACTUATORS = "xmpp.iot.actuators";
 const std::string PubSubHelper::XMPP_IOT_ACTUATOR_LED = "xmpp.iot.actuator.led";
 const std::string PubSubHelper::XMPP_IOT_ACTUATOR_SPEAKER = "xmpp.iot.actuator.speaker";
+const std::string PubSubHelper::XMPP_IOT_ACTUATOR_RELAY = "xmpp.iot.actuator.relay";
 const std::string PubSubHelper::XMPP_IOT_UI = "xmpp.iot.ui";
 const std::string PubSubHelper::XMPP_IOT_NAMESPACE = "urn:xmpp:uwpx:iot";
 
@@ -130,62 +133,53 @@ tinyxml2::XMLElement* PubSubHelper::genPublishItemNode(tinyxml2::XMLDocument& do
     return itemNode;
 }
 
-std::string PubSubHelper::genPublishTempNodeItemMessage(double temp) {
-    tinyxml2::XMLDocument doc;
-    tinyxml2::XMLElement* itemNode = genPublishItemNode(doc, XMPP_IOT_SENSORS.c_str(), XMPP_IOT_SENSOR_TEMP.c_str());
-    tinyxml2::XMLElement* valNode = doc.NewElement("val");
-    valNode->SetAttribute("xmlns", XMPP_IOT_NAMESPACE.c_str());
-    valNode->SetAttribute("type", "double");
-    valNode->SetAttribute("unit", "celsius");
-    valNode->SetText(temp);
-    itemNode->InsertEndChild(valNode);
-
-    tinyxml2::XMLPrinter printer;
-    doc.FirstChild()->Accept(&printer);
-    return printer.CStr();
+void PubSubHelper::publishTempNode(double temp) {
+    const std::string value = std::to_string(temp);
+    const std::string unit = "celsius";
+    const std::string type = "double";
+    publishSensorNode(XMPP_IOT_SENSOR_TEMP, value, unit, type);
 }
 
-std::string PubSubHelper::genPublishPressureNodeItemMessage(int32_t pressure) {
-    tinyxml2::XMLDocument doc;
-    tinyxml2::XMLElement* itemNode = genPublishItemNode(doc, XMPP_IOT_SENSORS.c_str(), XMPP_IOT_SENSOR_BAR.c_str());
-    tinyxml2::XMLElement* valNode = doc.NewElement("val");
-    valNode->SetAttribute("xmlns", XMPP_IOT_NAMESPACE.c_str());
-    valNode->SetAttribute("type", "uint");
-    valNode->SetAttribute("unit", "bar");
-    valNode->SetText(pressure);
-    itemNode->InsertEndChild(valNode);
-
-    tinyxml2::XMLPrinter printer;
-    doc.FirstChild()->Accept(&printer);
-    return printer.CStr();
+void PubSubHelper::publishPressureNode(int32_t pressure) {
+    const std::string value = std::to_string(pressure);
+    const std::string unit = "bar";
+    const std::string type = "uint";
+    publishSensorNode(XMPP_IOT_SENSOR_BAR, value, unit, type);
 }
 
-std::string PubSubHelper::genPublishLedNodeItemMessage(bool on) {
-    tinyxml2::XMLDocument doc;
-    tinyxml2::XMLElement* itemNode = genPublishItemNode(doc, XMPP_IOT_ACTUATORS.c_str(), XMPP_IOT_ACTUATOR_LED.c_str());
-    tinyxml2::XMLElement* valNode = doc.NewElement("val");
-    valNode->SetAttribute("xmlns", XMPP_IOT_NAMESPACE.c_str());
-    valNode->SetAttribute("type", "bool");
-    valNode->SetText(on);
-    itemNode->InsertEndChild(valNode);
-
-    tinyxml2::XMLPrinter printer;
-    doc.FirstChild()->Accept(&printer);
-    return printer.CStr();
+void PubSubHelper::publishLedNode(bool on) {
+    const std::string value = std::to_string(on);
+    const std::string unit = "";
+    const std::string type = "bool";
+    publishActuatorNode(XMPP_IOT_ACTUATOR_LED, value, unit, type);
 }
 
-std::string PubSubHelper::genPublishSpeakerNodeItemMessage(bool on) {
-    tinyxml2::XMLDocument doc;
-    tinyxml2::XMLElement* itemNode = genPublishItemNode(doc, XMPP_IOT_ACTUATORS.c_str(), XMPP_IOT_ACTUATOR_SPEAKER.c_str());
-    tinyxml2::XMLElement* valNode = doc.NewElement("val");
-    valNode->SetAttribute("xmlns", XMPP_IOT_NAMESPACE.c_str());
-    valNode->SetAttribute("type", "bool");
-    valNode->SetText(on);
-    itemNode->InsertEndChild(valNode);
+void PubSubHelper::publishSpeakerNode(bool on) {
+    const std::string value = std::to_string(on);
+    const std::string unit = "";
+    const std::string type = "bool";
+    publishActuatorNode(XMPP_IOT_ACTUATOR_SPEAKER, value, unit, type);
+}
 
-    tinyxml2::XMLPrinter printer;
-    doc.FirstChild()->Accept(&printer);
-    return printer.CStr();
+void PubSubHelper::publishMq2Node(int32_t val) {
+    const std::string value = std::to_string(val);
+    const std::string unit = "";
+    const std::string type = "uint";
+    publishSensorNode(XMPP_IOT_SENSOR_MQ2, value, unit, type);
+}
+
+void PubSubHelper::publishPhotoresistorNode(int32_t val) {
+    const std::string value = std::to_string(val);
+    const std::string unit = "";
+    const std::string type = "uint";
+    publishSensorNode(XMPP_IOT_SENSOR_PHOTORESISTOR, value, unit, type);
+}
+
+void PubSubHelper::publishRelayNode(bool on) {
+    const std::string value = std::to_string(on);
+    const std::string unit = "";
+    const std::string type = "bool";
+    publishActuatorNode(XMPP_IOT_ACTUATOR_RELAY, value, unit, type);
 }
 
 tinyxml2::XMLElement* PubSubHelper::genFieldNode(tinyxml2::XMLDocument& doc, const char* var, const char* type, const char* value) {
@@ -238,10 +232,35 @@ tinyxml2::XMLElement* PubSubHelper::genNodePublishConfig(tinyxml2::XMLDocument& 
     return publishOptionsNode;
 }
 
-void PubSubHelper::publishSensorsNode(double temp, int32_t pressure) {
-    std::string msg = genPublishTempNodeItemMessage(temp);
+void PubSubHelper::publishSensorNode(const std::string& node, const std::string& value, const std::string& unit, const std::string& type) {
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement* itemNode = genPublishItemNode(doc, XMPP_IOT_SENSORS.c_str(), node.c_str());
+    tinyxml2::XMLElement* valNode = doc.NewElement("val");
+    valNode->SetAttribute("xmlns", XMPP_IOT_NAMESPACE.c_str());
+    valNode->SetAttribute("type", type.c_str());
+    valNode->SetAttribute("unit", unit.c_str());
+    valNode->SetText(value.c_str());
+    itemNode->InsertEndChild(valNode);
+
+    tinyxml2::XMLPrinter printer;
+    doc.FirstChild()->Accept(&printer);
+    std::string msg = printer.CStr();
     client->send(msg);
-    msg = genPublishPressureNodeItemMessage(pressure);
+}
+
+void PubSubHelper::publishActuatorNode(const std::string& node, const std::string& value, const std::string& unit, const std::string& type) {
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement* itemNode = genPublishItemNode(doc, XMPP_IOT_ACTUATORS.c_str(), node.c_str());
+    tinyxml2::XMLElement* valNode = doc.NewElement("val");
+    valNode->SetAttribute("xmlns", XMPP_IOT_NAMESPACE.c_str());
+    valNode->SetAttribute("type", type.c_str());
+    valNode->SetAttribute("unit", unit.c_str());
+    valNode->SetText(value.c_str());
+    itemNode->InsertEndChild(valNode);
+
+    tinyxml2::XMLPrinter printer;
+    doc.FirstChild()->Accept(&printer);
+    std::string msg = printer.CStr();
     client->send(msg);
 }
 
@@ -263,23 +282,19 @@ void PubSubHelper::onDiscoverNodesReply(messages::Message& event) {
         }
     }
     // Publish nodes anyway.
-    // Don't care if the exist:
+    // Don't care if they exist:
 
     // UI:
     std::string msg = genPublishUiNodeMessage();
     client->send(msg);
 
     // Sensors:
-    msg = genPublishTempNodeItemMessage(0.0);
-    client->send(msg);
-    msg = genPublishPressureNodeItemMessage(0);
-    client->send(msg);
+    publishTempNode(0.0);
+    publishPressureNode(0);
 
     // Actuators:
-    msg = genPublishLedNodeItemMessage(false);
-    client->send(msg);
-    msg = genPublishSpeakerNodeItemMessage(false);
-    client->send(msg);
+    publishLedNode(false);
+    publishSpeakerNode(false);
 
     /*if (std::find(nodes.begin(), nodes.end(), XMPP_IOT_UI) == nodes.end()) {
         std::string msg = genPublishUiNodeMessage();

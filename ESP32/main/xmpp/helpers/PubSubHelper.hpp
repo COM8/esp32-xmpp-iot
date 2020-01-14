@@ -29,10 +29,6 @@ class PubSubHelper : public INonConstEventListener<messages::Message> {
 
     std::string genDiscoverNodesMessage();
     std::string genPublishUiNodeMessage();
-    std::string genPublishTempNodeItemMessage(double temp);
-    std::string genPublishPressureNodeItemMessage(int32_t pressure);
-    std::string genPublishLedNodeItemMessage(bool on);
-    std::string genPublishSpeakerNodeItemMessage(bool on);
     tinyxml2::XMLElement* genFieldNode(tinyxml2::XMLDocument& doc, const char* var, const char* type, const char* value);
     tinyxml2::XMLElement* genNodePublishConfig(tinyxml2::XMLDocument& doc);
     /**
@@ -43,14 +39,25 @@ class PubSubHelper : public INonConstEventListener<messages::Message> {
     public:
     static const std::string XMPP_IOT_SENSOR_TEMP;
     static const std::string XMPP_IOT_SENSOR_BAR;
+    static const std::string XMPP_IOT_SENSOR_MQ2;
+    static const std::string XMPP_IOT_SENSOR_PHOTORESISTOR;
     static const std::string XMPP_IOT_SENSORS;
     static const std::string XMPP_IOT_ACTUATORS;
     static const std::string XMPP_IOT_ACTUATOR_LED;
     static const std::string XMPP_IOT_ACTUATOR_SPEAKER;
+    static const std::string XMPP_IOT_ACTUATOR_RELAY;
     static const std::string XMPP_IOT_UI;
     static const std::string XMPP_IOT_NAMESPACE;
 
-    void publishSensorsNode(double temp, int32_t pressure);
+    void publishSensorNode(const std::string& node, const std::string& value, const std::string& unit, const std::string& type);
+    void publishActuatorNode(const std::string& node, const std::string& value, const std::string& unit, const std::string& type);
+    void publishTempNode(double temp);
+    void publishPressureNode(int32_t pressure);
+    void publishMq2Node(int32_t val);
+    void publishPhotoresistorNode(int32_t val);
+    void publishRelayNode(bool on);
+    void publishLedNode(bool on);
+    void publishSpeakerNode(bool on);
     std::string genRequestNodeConfigMessage(const std::string& nodeName);
 
     PubSubHelper(std::shared_ptr<xmpp::XmppClient> client);
