@@ -5,10 +5,10 @@
 namespace espiot::esp::sensors {
 //---------------------------------------------------------------------------
 /**
- * Default to ADC unit 1 and channel 5 (GPIO33) since ADC unit is used for Wi-Fi.
+ * Default to ADC unit 1 and channel 6 (GPIO34) since ADC 2 unit is used for Wi-Fi.
  * Reference: https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/peripherals/adc.html
  **/
-Photoresistor::Photoresistor() : Photoresistor(ADC_UNIT_1, ADC1_CHANNEL_5) {}
+Photoresistor::Photoresistor() : Photoresistor(ADC_UNIT_1, ADC1_CHANNEL_6) {}
 
 Photoresistor::Photoresistor(adc_unit_t unit, adc1_channel_t channel) : unit(unit),
                                                                         channel(channel),

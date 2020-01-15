@@ -31,6 +31,9 @@ XmppTask::XmppTask(esp::Storage& storage) : Task("XMPP Task", 4096, smooth::core
 #ifdef RELAY
                                             relay(GPIO_NUM_32),
 #endif // RELAY
+#ifdef PHOTORESISTOR
+                                            photo(),
+#endif
                                             client(nullptr),
                                             pubSubHelper(nullptr) {
 }
@@ -65,15 +68,20 @@ void XmppTask::tick() {
         pubSubHelper->publishPressureNode(pressure);
 #endif // BMP180
 #ifdef MQ2
-        int32_t val = mq2.read();
-        std::cout << "MQ2: " << val << "\n";
-        pubSubHelper->publishMq2Node(val);
-#endif // BMP180
+        int32_t mq2Val = mq2.read();
+        std::cout << "MQ2: " << mq2Val << "\n";
+        pubSubHelper->publishMq2Node(mq2Val);
+#endif // MQ2
 #ifdef RELAY
         bool relayOn = relay.toggle();
         std::cout << "RELAY: " << relayOn << "\n";
         pubSubHelper->publishRelayNode(relayOn);
 #endif // RELAY
+#ifdef PHOTORESISTOR
+        int32_t photoVal = photo.read();
+        std::cout << "Photoresistor: " << photoVal << "\n";
+        pubSubHelper->publishPhotoresistorNode(photoVal);
+#endif // PHOTORESISTOR
     }
 }
 

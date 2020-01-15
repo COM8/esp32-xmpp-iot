@@ -6,6 +6,7 @@
 #include "esp/actuators/Speaker.hpp"
 #include "esp/sensors/Bmp180.hpp"
 #include "esp/sensors/Mq2.hpp"
+#include "esp/sensors/Photoresistor.hpp"
 #include "helpers/PubSubHelper.hpp"
 #include "messages/Message.hpp"
 #include "xmpp/XmppClient.hpp"
@@ -15,11 +16,6 @@
 #include <smooth/core/ipc/SubscribingTaskEventQueue.h>
 #include <smooth/core/network/IPv4.h>
 #include <smooth/core/network/NetworkStatus.h>
-
-// #define BMP180
-#define MQ2
-// #define SPEAKER
-// #define RELAY
 
 //---------------------------------------------------------------------------
 namespace espiot::xmpp {
@@ -46,6 +42,9 @@ class XmppTask : public smooth::core::Task,
 #ifdef RELAY
     esp::actuators::Relay relay;
 #endif // RELAY
+#ifdef PHOTORESISTOR
+    esp::sensors::Photoresistor photo;
+#endif // PHOTORESISTOR
 
     std::shared_ptr<xmpp::XmppClient> client;
     std::unique_ptr<helpers::PubSubHelper> pubSubHelper;
