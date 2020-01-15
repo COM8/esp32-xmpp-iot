@@ -5,10 +5,10 @@
 //---------------------------------------------------------------------------
 namespace espiot::xmpp {
 //---------------------------------------------------------------------------
-const std::string JID = "iot1@xmpp2.uwpx.org";
-const std::string JID_PASSWORD = "iot1";
-const std::string JID_SENDER = "com8@xmpp.uwpx.org";
-const std::string SERVER_IP = "xmpp2.uwpx.org";
+const std::string JID = "";
+const std::string JID_PASSWORD = "";
+const std::string JID_SENDER = "s";
+const std::string SERVER_IP = "";
 const uint16_t SERVER_PORT = 5222;
 //---------------------------------------------------------------------------
 } // namespace espiot::xmpp
