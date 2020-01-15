@@ -138,6 +138,34 @@ void XmppTask::handleMessageMessages(const tinyxml2::XMLElement* elem) {
         } else {
             handleIoTMessageMessage(elem->GetText());
         }
+    } else if ((elem = elem->FirstChildElement("event"))) {
+        if ((elem = elem->FirstChildElement("items"))) {
+            handlePubSubEventMessage(elem);
+        }
+    }
+}
+
+void XmppTask::handlePubSubEventMessage(const tinyxml2::XMLElement* elem) {
+    const tinyxml2::XMLAttribute* nodeAttrib = elem->FindAttribute("node");
+    if (nodeAttrib && (elem = elem->FirstChildElement("item"))) {
+        const tinyxml2::XMLAttribute* idAttrib = elem->FindAttribute("id");
+        if (idAttrib && (elem = elem->FirstChildElement("val"))) {
+            if (!strcmp(nodeAttrib->Value(), pubSubHelper->XMPP_IOT_ACTUATORS.c_str())) {
+                if (!strcmp(idAttrib->Value(), pubSubHelper->XMPP_IOT_ACTUATOR_RELAY.c_str())) {
+#ifdef RELAY
+                    std::string val = elem->GetText();
+                    relay.set(val == "1");
+                    std::cout << "Relay value updated to: " << val << "\n";
+#endif // RELAY
+                } else if (!strcmp(idAttrib->Value(), pubSubHelper->XMPP_IOT_ACTUATOR_SPEAKER.c_str())) {
+#ifdef SPEAKER
+                    std::string val = elem->GetText();
+                    speaker.set(val == "1");
+                    std::cout << "Speaker value updated to: " << val << "\n";
+#endif // SPEAKER
+                }
+            }
+        }
     }
 }
 

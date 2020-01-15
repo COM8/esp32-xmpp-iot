@@ -53,6 +53,7 @@ class XmppTask : public smooth::core::Task,
 
     void onReady();
     void handleIoTMessageMessage(const char* msg);
+    void handlePubSubEventMessage(const tinyxml2::XMLElement* elem);
 
     public:
     XmppTask(esp::Storage& storage);

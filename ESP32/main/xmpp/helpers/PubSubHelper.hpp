@@ -8,8 +8,8 @@
 // #define BMP180
 // #define MQ2
 // #define SPEAKER
-// #define RELAY
-#define PHOTORESISTOR
+#define RELAY
+// #define PHOTORESISTOR
 
 //---------------------------------------------------------------------------
 namespace espiot::xmpp::helpers {
