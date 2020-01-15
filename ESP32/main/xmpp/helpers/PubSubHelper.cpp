@@ -76,31 +76,35 @@ std::string PubSubHelper::genPublishUiNodeMessage() {
     titleNode->SetText("ESP32 XMPP");
     xNode->InsertEndChild(titleNode);
 
-    tinyxml2::XMLElement* ledFieldNode = doc.NewElement("field");
-    ledFieldNode->SetAttribute("type", "boolean");
-    ledFieldNode->SetAttribute("label", "LED on?");
-    ledFieldNode->SetAttribute("var", XMPP_IOT_ACTUATOR_LED.c_str());
-    xNode->InsertEndChild(ledFieldNode);
+    tinyxml2::XMLElement* node;
 
-    tinyxml2::XMLElement* speakerFieldNode = doc.NewElement("field");
-    speakerFieldNode->SetAttribute("type", "boolean");
-    speakerFieldNode->SetAttribute("label", "Speaker on?");
-    speakerFieldNode->SetAttribute("var", XMPP_IOT_ACTUATOR_SPEAKER.c_str());
-    xNode->InsertEndChild(speakerFieldNode);
+    // Sensors:
+#ifdef BMP180
+    node = genFieldNode(doc, XMPP_IOT_SENSOR_TEMP.c_str(), "text-single", nullptr, "Temperature:");
+    node->InsertEndChild(doc.NewElement("xdd:readOnly"));
+    xNode->InsertEndChild(node);
+    node = genFieldNode(doc, XMPP_IOT_SENSOR_BAR.c_str(), "text-single", nullptr, "Pressure:");
+    node->InsertEndChild(doc.NewElement("xdd:readOnly"));
+    xNode->InsertEndChild(node);
+#endif // BMP180
+#ifdef MQ2
+    node = genFieldNode(doc, XMPP_IOT_SENSOR_MQ2.c_str(), "text-single", nullptr, "MQ2:");
+    node->InsertEndChild(doc.NewElement("xdd:readOnly"));
+    xNode->InsertEndChild(node);
+#endif // MQ2
+#ifdef PHOTORESISTOR
+    node = genFieldNode(doc, XMPP_IOT_SENSOR_PHOTORESISTOR.c_str(), "text-single", nullptr, "Photoresistor:");
+    node->InsertEndChild(doc.NewElement("xdd:readOnly"));
+    xNode->InsertEndChild(node);
+#endif // PHOTORESISTOR
 
-    tinyxml2::XMLElement* tempFieldNode = doc.NewElement("field");
-    tempFieldNode->SetAttribute("type", "text-single");
-    tempFieldNode->SetAttribute("label", "Temperature: ");
-    tempFieldNode->SetAttribute("var", XMPP_IOT_SENSOR_TEMP.c_str());
-    xNode->InsertEndChild(tempFieldNode);
-    tempFieldNode->InsertEndChild(doc.NewElement("xdd:readOnly"));
-
-    tinyxml2::XMLElement* barFieldNode = doc.NewElement("field");
-    barFieldNode->SetAttribute("type", "text-single");
-    barFieldNode->SetAttribute("label", "Pressure: ");
-    barFieldNode->SetAttribute("var", XMPP_IOT_SENSOR_BAR.c_str());
-    xNode->InsertEndChild(barFieldNode);
-    barFieldNode->InsertEndChild(doc.NewElement("xdd:readOnly"));
+    // Actuators:
+#ifdef SPEAKER
+    xNode->InsertEndChild(genFieldNode(doc, XMPP_IOT_ACTUATOR_SPEAKER.c_str(), "boolean", nullptr, "Speaker on:"));
+#endif // SPEAKER
+#ifdef RELAY
+    xNode->InsertEndChild(genFieldNode(doc, XMPP_IOT_ACTUATOR_RELAY.c_str(), "boolean", nullptr, "Relay on:"));
+#endif // RELAY
 
     tinyxml2::XMLPrinter printer;
     doc.FirstChild()->Accept(&printer);
@@ -182,16 +186,20 @@ void PubSubHelper::publishRelayNode(bool on) {
     publishActuatorNode(XMPP_IOT_ACTUATOR_RELAY, value, unit, type);
 }
 
-tinyxml2::XMLElement* PubSubHelper::genFieldNode(tinyxml2::XMLDocument& doc, const char* var, const char* type, const char* value) {
+tinyxml2::XMLElement* PubSubHelper::genFieldNode(tinyxml2::XMLDocument& doc, const char* var, const char* type, const char* value, const char* label) {
     tinyxml2::XMLElement* fieldNode = doc.NewElement("field");
     fieldNode->SetAttribute("var", var);
     if (type) {
         fieldNode->SetAttribute("type", type);
     }
-
-    tinyxml2::XMLElement* valueNode = doc.NewElement("value");
-    valueNode->SetText(value);
-    fieldNode->InsertEndChild(valueNode);
+    if (label) {
+        fieldNode->SetAttribute("label", label);
+    }
+    if (value) {
+        tinyxml2::XMLElement* valueNode = doc.NewElement("value");
+        valueNode->SetText(value);
+        fieldNode->InsertEndChild(valueNode);
+    }
     return fieldNode;
 }
 
@@ -224,10 +232,10 @@ tinyxml2::XMLElement* PubSubHelper::genNodePublishConfig(tinyxml2::XMLDocument& 
     xNode->SetAttribute("type", "submit");
     publishOptionsNode->InsertEndChild(xNode);
 
-    publishOptionsNode->InsertEndChild(genFieldNode(doc, "FORM_TYPE", "hidden", "http://jabber.org/protocol/pubsub#publish-options"));
-    publishOptionsNode->InsertEndChild(genFieldNode(doc, "pubsub#persist_items", nullptr, "true"));
-    publishOptionsNode->InsertEndChild(genFieldNode(doc, "pubsub#access_model", nullptr, "presence"));
-    publishOptionsNode->InsertEndChild(genFieldNode(doc, "pubsub#publish_model", nullptr, "open")); // Perhaps replace with "subscribers"
+    publishOptionsNode->InsertEndChild(genFieldNode(doc, "FORM_TYPE", "hidden", "http://jabber.org/protocol/pubsub#publish-options", nullptr));
+    publishOptionsNode->InsertEndChild(genFieldNode(doc, "pubsub#persist_items", nullptr, "true", nullptr));
+    publishOptionsNode->InsertEndChild(genFieldNode(doc, "pubsub#access_model", nullptr, "presence", nullptr));
+    publishOptionsNode->InsertEndChild(genFieldNode(doc, "pubsub#publish_model", nullptr, "open", nullptr)); // Perhaps replace with "subscribers"
 
     return publishOptionsNode;
 }
@@ -289,12 +297,24 @@ void PubSubHelper::onDiscoverNodesReply(messages::Message& event) {
     client->send(msg);
 
     // Sensors:
-    publishTempNode(0.0);
+#ifdef BMP180
+    publishTempNode(0);
     publishPressureNode(0);
+#endif // BMP180
+#ifdef MQ2
+    publishMq2Node(0);
+#endif // MQ2
+#ifdef PHOTORESISTOR
+    publishPhotoresistorNode(0);
+#endif // PHOTORESISTOR
 
     // Actuators:
-    publishLedNode(false);
-    publishSpeakerNode(false);
+#ifdef SPEAKER
+    publishSpeakerNode(0);
+#endif // SPEAKER
+#ifdef RELAY
+    publishRelayNode(0);
+#endif // RELAY
 
     /*if (std::find(nodes.begin(), nodes.end(), XMPP_IOT_UI) == nodes.end()) {
         std::string msg = genPublishUiNodeMessage();

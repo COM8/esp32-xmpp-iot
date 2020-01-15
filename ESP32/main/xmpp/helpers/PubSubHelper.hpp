@@ -5,6 +5,12 @@
 #include "../messages/Message.hpp"
 #include <tinyxml2.h>
 
+// #define BMP180
+// #define MQ2
+// #define SPEAKER
+// #define RELAY
+#define PHOTORESISTOR
+
 //---------------------------------------------------------------------------
 namespace espiot::xmpp::helpers {
 //---------------------------------------------------------------------------
@@ -29,7 +35,7 @@ class PubSubHelper : public INonConstEventListener<messages::Message> {
 
     std::string genDiscoverNodesMessage();
     std::string genPublishUiNodeMessage();
-    tinyxml2::XMLElement* genFieldNode(tinyxml2::XMLDocument& doc, const char* var, const char* type, const char* value);
+    tinyxml2::XMLElement* genFieldNode(tinyxml2::XMLDocument& doc, const char* var, const char* type, const char* value, const char* label);
     tinyxml2::XMLElement* genNodePublishConfig(tinyxml2::XMLDocument& doc);
     /**
      * Generates a new PEP node.
