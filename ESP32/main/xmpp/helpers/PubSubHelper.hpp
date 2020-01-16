@@ -37,6 +37,7 @@ class PubSubHelper : public INonConstEventListener<messages::Message> {
     std::string genPublishUiNodeMessage();
     tinyxml2::XMLElement* genFieldNode(tinyxml2::XMLDocument& doc, const char* var, const char* type, const char* value, const char* label);
     tinyxml2::XMLElement* genNodePublishConfig(tinyxml2::XMLDocument& doc);
+    tinyxml2::XMLElement* genNodeConfig(tinyxml2::XMLDocument& doc);
     /**
      * Generates a new PEP node.
      **/
@@ -64,7 +65,10 @@ class PubSubHelper : public INonConstEventListener<messages::Message> {
     void publishRelayNode(bool on);
     void publishLedNode(bool on);
     void publishSpeakerNode(bool on);
-    std::string genRequestNodeConfigMessage(const std::string& nodeName);
+    void requestNodeConfigMessage(const std::string& nodeName);
+    void createNode(const std::string& nodeName);
+    void deleteNode(const std::string& nodeName);
+    void subscribeToNode(const std::string& nodeName);
 
     PubSubHelper(std::shared_ptr<xmpp::XmppClient> client);
 

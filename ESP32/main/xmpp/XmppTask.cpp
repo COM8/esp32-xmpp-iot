@@ -73,15 +73,17 @@ void XmppTask::tick() {
         pubSubHelper->publishMq2Node(mq2Val);
 #endif // MQ2
 #ifdef RELAY
-        bool relayOn = relay.toggle();
+        /*bool relayOn = relay.toggle();
         std::cout << "RELAY: " << relayOn << "\n";
-        pubSubHelper->publishRelayNode(relayOn);
+        pubSubHelper->publishRelayNode(relayOn);*/
 #endif // RELAY
 #ifdef PHOTORESISTOR
         int32_t photoVal = photo.read();
         std::cout << "Photoresistor: " << photoVal << "\n";
         pubSubHelper->publishPhotoresistorNode(photoVal);
 #endif // PHOTORESISTOR
+
+        // pubSubHelper->requestNodeConfigMessage(pubSubHelper->XMPP_IOT_UI);
     }
 }
 
@@ -119,10 +121,10 @@ void XmppTask::handlePresenceMessages(const tinyxml2::XMLElement* elem) {
 }
 
 void XmppTask::handleMessageMessages(const tinyxml2::XMLElement* elem) {
-    elem = elem->FirstChildElement("body");
-    if (elem) {
+    const tinyxml2::XMLElement* tmp = elem->FirstChildElement("body");
+    if (tmp) {
         if (!storage.readBool(esp::Storage::SETUP_DONE)) {
-            if (!strcmp(INITIAL_HELLO_MESSAGE.c_str(), elem->GetText())) {
+            if (!strcmp(INITIAL_HELLO_MESSAGE.c_str(), tmp->GetText())) {
                 std::string to = storage.readString(esp::Storage::JID_SENDER);
 
                 // Add to roster:
@@ -136,11 +138,11 @@ void XmppTask::handleMessageMessages(const tinyxml2::XMLElement* elem) {
                 onReady();
             }
         } else {
-            handleIoTMessageMessage(elem->GetText());
+            handleIoTMessageMessage(tmp->GetText());
         }
-    } else if ((elem = elem->FirstChildElement("event"))) {
-        if ((elem = elem->FirstChildElement("items"))) {
-            handlePubSubEventMessage(elem);
+    } else if ((tmp = elem->FirstChildElement("event"))) {
+        if ((tmp = tmp->FirstChildElement("items"))) {
+            handlePubSubEventMessage(tmp);
         }
     }
 }
