@@ -5,10 +5,10 @@
 #include "../messages/Message.hpp"
 #include <tinyxml2.h>
 
-// #define BMP180
+#define BMP180
 // #define MQ2
-// #define SPEAKER
-#define RELAY
+#define SPEAKER
+// #define RELAY
 // #define PHOTORESISTOR
 
 //---------------------------------------------------------------------------

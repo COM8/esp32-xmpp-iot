@@ -76,7 +76,9 @@ std::string PubSubHelper::genPublishUiNodeMessage() {
     titleNode->SetText("ESP32 XMPP");
     xNode->InsertEndChild(titleNode);
 
+#if defined(BMP180) || defined(MQ2) || defined(PHOTORESISTOR)
     tinyxml2::XMLElement* node;
+#endif
 
     // Sensors:
 #ifdef BMP180
