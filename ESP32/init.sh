@@ -9,7 +9,7 @@ git submodule update --init --recursive
 if [ -d /tmp/esp32-snippets ]; then
 		rm -rf /tmp/esp32-snippets
 fi
-git clone git@github.com:COM8/esp32-snippets.git /tmp/esp32-snippets
+git clone https://github.com/COM8/esp32-snippets.git /tmp/esp32-snippets
 if [ -d components ]; then
 		rm -rf components
 fi
